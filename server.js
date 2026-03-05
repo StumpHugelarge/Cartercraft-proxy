@@ -141,7 +141,7 @@ async function guessHome(client) {
 
   // 3. Try common Shockbyte/Bedrock paths
   const candidates = [
-    "/home/container",
+    "/1. Stumptown",
     "/home/minecraft",
     "/opt/minecraft",
     "/minecraft",
