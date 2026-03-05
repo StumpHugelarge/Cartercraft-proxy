@@ -1,13 +1,12 @@
 /**
+ * Cartercraft SFTP Proxy Server
+ * Bridges the PWA to Shockbyte SFTP
+ * Deploy to Railway / Render (free tier)
+ */
 
-- Cartercraft SFTP Proxy Server
-- Bridges the PWA to Shockbyte SFTP
-- Deploy to Railway / Render (free tier)
-  */
-
-const express    = require(“express”);
-const cors       = require(“cors”);
-const SftpClient = require(“ssh2-sftp-client”);
+const express    = require("express");
+const cors       = require("cors");
+const SftpClient = require("ssh2-sftp-client");
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -15,153 +14,158 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// ── Health check ──────────────────────────────────────────
-app.get(”/health”, (req, res) => res.json({ ok: true, version: “1.0.0” }));
+// Health check
+app.get("/health", (req, res) => res.json({ ok: true, version: "1.1.0" }));
 
-// ── Helper: build + connect a client from request body ───
+// Build + connect an SFTP client from request body
 async function makeClient(body) {
-const { host, port, username, password } = body;
-if (!host || !username || !password) {
-throw new Error(“host, username, and password are required”);
-}
-const client = new SftpClient();
-await client.connect({
-host,
-port:     parseInt(port) || 2222,
-username,
-password,
-readyTimeout: 15000,
-// Shockbyte uses non-standard CLOSE errors — keep retrying
-retries:  2,
-retry_factor:  2,
-retry_minTimeout: 2000,
-});
-return client;
-}
-
-// ── POST /connect  ── test credentials ───────────────────
-app.post(”/connect”, async (req, res) => {
-let client;
-try {
-client = await makeClient(req.body);
-// Resolve home directory
-let home = “.”;
-try {
-home = await client.realPath(”.”);
-if (!home || home === “/”) home = await guessHome(client);
-} catch (*) {
-home = await guessHome(client);
-}
-await client.end();
-res.json({ ok: true, home });
-} catch (err) {
-if (client) { try { await client.end(); } catch(*){} }
-res.status(400).json({ ok: false, error: err.message });
-}
-});
-
-// ── POST /list  ── list a remote directory ────────────────
-app.post(”/list”, async (req, res) => {
-const { path: remotePath = “.” } = req.body;
-let client;
-try {
-client = await makeClient(req.body);
-
-```
-// Resolve path safely (never list "/")
-let absPath = remotePath;
-if (absPath === "/" || absPath === "") {
-  absPath = await guessHome(client);
-} else {
-  try {
-    const resolved = await client.realPath(remotePath);
-    absPath = (resolved && resolved !== "/") ? resolved : await guessHome(client);
-  } catch (_) {
-    absPath = await guessHome(client);
+  const { host, port, username, password } = body;
+  if (!host || !username || !password) {
+    throw new Error("host, username, and password are required");
   }
-}
-
-const entries = await client.list(absPath);
-await client.end();
-
-const items = entries
-  .map(e => ({
-    name:   e.name,
-    path:   absPath.replace(/\/$/, "") + "/" + e.name,
-    isDir:  e.type === "d",
-    size:   e.size || 0,
-    mtime:  e.modifyTime || 0,
-  }))
-  .sort((a, b) => {
-    if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
-    return a.name.localeCompare(b.name);
+  const client = new SftpClient();
+  await client.connect({
+    host,
+    port:            parseInt(port) || 2222,
+    username,
+    password,
+    readyTimeout:    15000,
+    retries:         2,
+    retry_factor:    2,
+    retry_minTimeout: 2000,
   });
-
-res.json({ ok: true, path: absPath, items });
-```
-
-} catch (err) {
-if (client) { try { await client.end(); } catch(_){} }
-res.status(400).json({ ok: false, error: err.message });
+  return client;
 }
+
+// POST /connect -- test credentials and return home directory
+app.post("/connect", async (req, res) => {
+  let client;
+  try {
+    client = await makeClient(req.body);
+    const home = await guessHome(client);
+    await client.end();
+    res.json({ ok: true, home });
+  } catch (err) {
+    if (client) { try { await client.end(); } catch (_) {} }
+    res.status(400).json({ ok: false, error: err.message });
+  }
 });
 
-// ── POST /resolve  ── resolve a path to absolute ─────────
-app.post(”/resolve”, async (req, res) => {
-const { path: remotePath = “.” } = req.body;
-let client;
-try {
-client = await makeClient(req.body);
-const abs = await client.realPath(remotePath);
-await client.end();
-res.json({ ok: true, path: abs });
-} catch (err) {
-if (client) { try { await client.end(); } catch(_){} }
-res.status(400).json({ ok: false, error: err.message });
-}
+// POST /list -- list a remote directory
+app.post("/list", async (req, res) => {
+  const remotePath = req.body.path || ".";
+  let client;
+  try {
+    client = await makeClient(req.body);
+
+    // Resolve to absolute path, never list "/"
+    let absPath = remotePath;
+    if (absPath === "/" || absPath === "") {
+      absPath = await guessHome(client);
+    } else {
+      try {
+        const resolved = await client.realPath(remotePath);
+        if (resolved && resolved !== "/") {
+          absPath = resolved;
+        } else {
+          absPath = await guessHome(client);
+        }
+      } catch (_) {
+        absPath = await guessHome(client);
+      }
+    }
+
+    const entries = await client.list(absPath);
+    await client.end();
+
+    const items = entries
+      .map(e => ({
+        name:  e.name,
+        path:  absPath.replace(/\/$/, "") + "/" + e.name,
+        isDir: e.type === "d",
+        size:  e.size || 0,
+        mtime: e.modifyTime || 0,
+      }))
+      .sort((a, b) => {
+        if (a.isDir !== b.isDir) return a.isDir ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      });
+
+    res.json({ ok: true, path: absPath, items });
+  } catch (err) {
+    if (client) { try { await client.end(); } catch (_) {} }
+    res.status(400).json({ ok: false, error: err.message });
+  }
 });
 
-// ── Shockbyte home directory guesser ─────────────────────
+// POST /resolve -- resolve a path to absolute
+app.post("/resolve", async (req, res) => {
+  const remotePath = req.body.path || ".";
+  let client;
+  try {
+    client = await makeClient(req.body);
+    const abs = await client.realPath(remotePath);
+    await client.end();
+    res.json({ ok: true, path: abs });
+  } catch (err) {
+    if (client) { try { await client.end(); } catch (_) {} }
+    res.status(400).json({ ok: false, error: err.message });
+  }
+});
+
+// Shockbyte home directory guesser
+// Shockbyte uses numbered root folders like "/1. Stumptown"
 async function guessHome(client) {
-// First try normalizing “.” which returns the SFTP CWD
-for (const attempt of [”.”, “”]) {
-try {
-const result = await client.realPath(attempt);
-if (result && result !== “/” && result.length > 1) {
-// Verify we can actually list it
-await client.list(result);
-return result;
-}
-} catch (_) {}
-}
+  // 1. Try realPath(".") -- returns SFTP working directory
+  try {
+    const cwd = await client.realPath(".");
+    if (cwd && cwd !== "/" && cwd.length > 1) {
+      await client.list(cwd);
+      return cwd;
+    }
+  } catch (_) {}
 
-// Shockbyte-specific common paths
-const candidates = [
-“/home/container”,
-“/home/minecraft”,
-“/opt/minecraft”,
-“/minecraft”,
-“/server”,
-“/bedrock”,
-“/opt/bedrock”,
-];
+  // 2. Scan root for Shockbyte-style numbered folders e.g. "/1. Stumptown"
+  try {
+    const rootEntries = await client.list("/");
+    for (const entry of rootEntries) {
+      if (entry.type === "d") {
+        const p = "/" + entry.name;
+        try {
+          await client.list(p);
+          return p;
+        } catch (_) {}
+      }
+    }
+  } catch (_) {}
 
-for (const p of candidates) {
-try {
-await client.list(p);
-return p;
-} catch (_) {}
-}
+  // 3. Try common Shockbyte/Bedrock paths
+  const candidates = [
+    "/home/container",
+    "/home/minecraft",
+    "/opt/minecraft",
+    "/minecraft",
+    "/server",
+    "/bedrock",
+    "/opt/bedrock",
+  ];
 
-// Last resort — return CWD even if we couldn’t verify it
-try {
-const cwd = await client.realPath(”.”);
-if (cwd && cwd.length > 1) return cwd;
-} catch (_) {}
+  for (const p of candidates) {
+    try {
+      await client.list(p);
+      return p;
+    } catch (_) {}
+  }
 
-return “/home/container”; // better Shockbyte default than /data
+  // 4. Fall back to realPath even if listing failed
+  try {
+    const cwd = await client.realPath(".");
+    if (cwd && cwd.length > 1) return cwd;
+  } catch (_) {}
+
+  return "/home/container";
 }
 
 app.listen(PORT, () => {
-console.log(`Cartercraft SFTP proxy listening on port ${PORT}`);
+  console.log("Cartercraft SFTP proxy listening on port " + PORT);
 });
