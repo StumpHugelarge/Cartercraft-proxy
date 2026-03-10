@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -52,12 +51,10 @@
     .path-card-label{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
     .path-card-val{font-size:11px;color:var(--fg2);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .path-card-val.set{color:var(--ok)}
-    /* Scan bar */
     .scan-bar{display:flex;gap:8px;margin-bottom:12px}
     .scan-btn{flex:1;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
     .scan-btn:active{transform:scale(.97);opacity:.9}
     .scan-btn:disabled{opacity:.35;cursor:default;background:var(--border);color:var(--fg2)}
-    /* Filter */
     .filter-bar{display:flex;gap:8px;margin-bottom:12px;align-items:center}
     .search-wrap{flex:1;position:relative}
     .search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 12px 9px 34px;color:var(--fg);font-family:'Outfit',sans-serif;font-size:14px;outline:none;-webkit-appearance:none}
@@ -106,7 +103,6 @@
     .modal-input:focus{border-color:var(--accent)}
     .modal-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:8px}
     .modal-btn.secondary{background:var(--card);color:var(--fg2);border:1px solid var(--border)}
-    /* Browser */
     .browser-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
     .browser-path-wrap{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .browser-up-btn{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
@@ -122,10 +118,8 @@
     .browser-status{text-align:center;padding:28px;color:var(--fg2);font-size:13px;line-height:1.6}
     .selected-path-bar{background:rgba(79,143,255,.1);border:1px solid rgba(79,143,255,.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);word-break:break-all;display:none}
     .selected-path-bar.visible{display:block}
-    /* Conn dot */
     .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--fg2);display:inline-block;margin-right:6px}
     .conn-dot.ok{background:var(--ok)}.conn-dot.err{background:var(--err)}
-    /* Settings */
     .settings-section{margin-bottom:20px}
     .settings-label{font-size:11px;color:var(--fg2);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
     .settings-row{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
@@ -134,7 +128,6 @@
     .settings-icon{font-size:20px;width:28px;text-align:center}
     .settings-text{flex:1}.settings-title{font-size:15px;color:var(--fg)}.settings-desc{font-size:12px;color:var(--fg2);margin-top:1px;word-break:break-all}
     .settings-arrow{color:var(--fg2)}
-    /* Dashboard */
     .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
     .dash-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 14px;text-align:center}
     .dash-num{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;line-height:1}
@@ -157,23 +150,18 @@
       <div class="icon-btn" onclick="openBackupModal()">S</div>
     </div>
   </header>
-
   <div class="stats-bar">
     <div class="stat-pill"><div class="stat-num" id="stat-bp" style="color:var(--bp-color)">0</div><div class="stat-label">BP Active</div></div>
     <div class="stat-pill"><div class="stat-num" id="stat-rp" style="color:var(--rp-color)">0</div><div class="stat-label">RP Active</div></div>
     <div class="stat-pill"><div class="stat-num" id="stat-total" style="color:var(--fg2)">0</div><div class="stat-label">Total</div></div>
     <div class="stat-pill"><div class="stat-num" id="stat-issues" style="color:var(--ok)">0</div><div class="stat-label">Issues</div></div>
   </div>
-
   <div class="tab-bar">
     <div class="tab active" onclick="switchTab('world')" id="tab-world"><span class="tab-icon">W</span>World</div>
     <div class="tab" onclick="switchTab('packs')" id="tab-packs"><span class="tab-icon">P</span>Packs</div>
     <div class="tab" onclick="switchTab('dash')" id="tab-dash"><span class="tab-icon">D</span>Dash</div>
     <div class="tab" onclick="switchTab('settings')" id="tab-settings"><span class="tab-icon">S</span>Settings</div>
   </div>
-
-  <!-- WORLD TAB -->
-
   <div class="content" id="panel-world">
     <div class="world-selector" onclick="openPathBrowser('world')">
       <div class="world-icon">W</div>
@@ -183,58 +171,40 @@
       </div>
       <div class="chevron">&rsaquo;</div>
     </div>
-
-```
-<div class="path-cards">
-  <div class="path-card" onclick="openPathBrowser('bp')">
-    <div class="path-card-label" style="color:var(--bp-color)">BP Behavior Packs</div>
-    <div class="path-card-val" id="bp-path-display">Not set</div>
+    <div class="path-cards">
+      <div class="path-card" onclick="openPathBrowser('bp')">
+        <div class="path-card-label" style="color:var(--bp-color)">BP Behavior Packs</div>
+        <div class="path-card-val" id="bp-path-display">Not set</div>
+      </div>
+      <div class="path-card" onclick="openPathBrowser('rp')">
+        <div class="path-card-label" style="color:var(--rp-color)">RP Resource Packs</div>
+        <div class="path-card-val" id="rp-path-display">Not set</div>
+      </div>
+    </div>
+    <div class="scan-bar">
+      <button class="scan-btn" id="scan-btn" onclick="scanFolders()" disabled>Scan Folders</button>
+    </div>
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">*</span>
+        <input type="text" id="search-input" placeholder="Search packs..." oninput="applyFilter()" />
+      </div>
+      <div class="type-seg">
+        <button class="seg-btn active" onclick="setTypeFilter('all',this)">ALL</button>
+        <button class="seg-btn" onclick="setTypeFilter('bp',this)">BP</button>
+        <button class="seg-btn" onclick="setTypeFilter('rp',this)">RP</button>
+      </div>
+    </div>
+    <div class="section-hdr"><span class="section-title" style="color:var(--ok)">Active</span><span class="section-count" id="active-count">0</span></div>
+    <div id="active-list"><div class="empty-state"><div class="empty-text">No active packs.<br>Activate from Available below.</div></div></div>
+    <div class="section-hdr"><span class="section-title">Available</span><span class="section-count" id="inactive-count">0</span></div>
+    <div id="inactive-list"><div class="empty-state"><div class="empty-text">Tap Scan Folders to load packs from your server.</div></div></div>
+    <div style="height:80px"></div>
   </div>
-  <div class="path-card" onclick="openPathBrowser('rp')">
-    <div class="path-card-label" style="color:var(--rp-color)">RP Resource Packs</div>
-    <div class="path-card-val" id="rp-path-display">Not set</div>
-  </div>
-</div>
-
-<!-- SCAN BUTTON -->
-<div class="scan-bar">
-  <button class="scan-btn" id="scan-btn" onclick="scanFolders()" disabled>
-    Scan Folders
-  </button>
-</div>
-
-<div class="filter-bar">
-  <div class="search-wrap">
-    <span class="search-icon">*</span>
-    <input type="text" id="search-input" placeholder="Search packs..." oninput="applyFilter()" />
-  </div>
-  <div class="type-seg">
-    <button class="seg-btn active" onclick="setTypeFilter('all',this)">ALL</button>
-    <button class="seg-btn" onclick="setTypeFilter('bp',this)">BP</button>
-    <button class="seg-btn" onclick="setTypeFilter('rp',this)">RP</button>
-  </div>
-</div>
-
-<div class="section-hdr"><span class="section-title" style="color:var(--ok)">Active</span><span class="section-count" id="active-count">0</span></div>
-<div id="active-list"><div class="empty-state"><div class="empty-icon">-</div><div class="empty-text">No active packs.<br>Activate from Available below.</div></div></div>
-
-<div class="section-hdr"><span class="section-title">Available</span><span class="section-count" id="inactive-count">0</span></div>
-<div id="inactive-list"><div class="empty-state"><div class="empty-icon">-</div><div class="empty-text">Tap Scan Folders to load packs from your server.</div></div></div>
-
-<div style="height:80px"></div>
-```
-
-  </div>
-
-  <!-- PACKS TAB -->
-
   <div class="content" id="panel-packs" style="display:none">
     <div class="section-hdr" style="margin-top:4px"><span class="section-title">All Packs</span></div>
     <div id="all-packs-list"></div>
   </div>
-
-  <!-- DASHBOARD TAB -->
-
   <div class="content" id="panel-dash" style="display:none">
     <div style="height:8px"></div>
     <div class="dash-grid">
@@ -246,11 +216,8 @@
     <div class="section-hdr"><span class="section-title">Load Order</span></div>
     <div id="load-order-preview"></div>
     <div class="section-hdr" style="margin-top:16px"><span class="section-title">Validation</span></div>
-    <div id="validation-list"><div class="empty-state"><div class="empty-icon">OK</div><div class="empty-text">No issues detected.</div></div></div>
+    <div id="validation-list"><div class="empty-state"><div class="empty-text">No issues detected.</div></div></div>
   </div>
-
-  <!-- SETTINGS TAB -->
-
   <div class="content" id="panel-settings" style="display:none">
     <div style="height:8px"></div>
     <div class="settings-section">
@@ -269,21 +236,9 @@
     <div class="settings-section">
       <div class="settings-label">Paths</div>
       <div class="settings-row">
-        <div class="settings-item" onclick="openPathBrowser('world')">
-          <span class="settings-icon">W</span>
-          <div class="settings-text"><div class="settings-title">World Folder</div><div class="settings-desc" id="setting-world-path">Not set</div></div>
-          <span class="settings-arrow">&rsaquo;</span>
-        </div>
-        <div class="settings-item" onclick="openPathBrowser('bp')">
-          <span class="settings-icon">B</span>
-          <div class="settings-text"><div class="settings-title">Behavior Packs Folder</div><div class="settings-desc" id="setting-bp-path">Not set</div></div>
-          <span class="settings-arrow">&rsaquo;</span>
-        </div>
-        <div class="settings-item" onclick="openPathBrowser('rp')">
-          <span class="settings-icon">R</span>
-          <div class="settings-text"><div class="settings-title">Resource Packs Folder</div><div class="settings-desc" id="setting-rp-path">Not set</div></div>
-          <span class="settings-arrow">&rsaquo;</span>
-        </div>
+        <div class="settings-item" onclick="openPathBrowser('world')"><span class="settings-icon">W</span><div class="settings-text"><div class="settings-title">World Folder</div><div class="settings-desc" id="setting-world-path">Not set</div></div><span class="settings-arrow">&rsaquo;</span></div>
+        <div class="settings-item" onclick="openPathBrowser('bp')"><span class="settings-icon">B</span><div class="settings-text"><div class="settings-title">Behavior Packs Folder</div><div class="settings-desc" id="setting-bp-path">Not set</div></div><span class="settings-arrow">&rsaquo;</span></div>
+        <div class="settings-item" onclick="openPathBrowser('rp')"><span class="settings-icon">R</span><div class="settings-text"><div class="settings-title">Resource Packs Folder</div><div class="settings-desc" id="setting-rp-path">Not set</div></div><span class="settings-arrow">&rsaquo;</span></div>
       </div>
     </div>
     <div class="settings-section">
@@ -305,17 +260,12 @@
       <div class="settings-row"><div class="settings-item"><span class="settings-icon">C</span><div class="settings-text"><div class="settings-title">Cartercraft Addon Manager</div><div class="settings-desc">iOS PWA v7.2.0</div></div></div></div>
     </div>
   </div>
-
   <div class="apply-footer" id="apply-footer">
     <div class="apply-info" id="apply-info">Select packs to activate</div>
     <button class="apply-btn" id="apply-btn" onclick="showConfirmModal()">Apply</button>
   </div>
 </div>
-
 <div id="toast"></div>
-
-<!-- SERVER SETTINGS MODAL -->
-
 <div class="modal-overlay" id="modal-server" onclick="closeModal('modal-server')">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -334,9 +284,6 @@
     </div>
   </div>
 </div>
-
-<!-- PATH BROWSER MODAL -->
-
 <div class="modal-overlay" id="modal-browser" onclick="closeModal('modal-browser')">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -353,9 +300,6 @@
     </div>
   </div>
 </div>
-
-<!-- ADD PACK MODAL -->
-
 <div class="modal-overlay" id="modal-add-pack" onclick="closeModal('modal-add-pack')">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -372,9 +316,6 @@
     </div>
   </div>
 </div>
-
-<!-- CONFIRM MODAL -->
-
 <div class="modal-overlay" id="modal-confirm" onclick="closeModal('modal-confirm')">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -388,9 +329,6 @@
     </div>
   </div>
 </div>
-
-<!-- BACKUP MODAL -->
-
 <div class="modal-overlay" id="modal-backup" onclick="closeModal('modal-backup')">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -403,9 +341,6 @@
     </div>
   </div>
 </div>
-
-<!-- SAVE PROFILE MODAL -->
-
 <div class="modal-overlay" id="modal-save-profile" onclick="closeModal('modal-save-profile')">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -417,399 +352,133 @@
     </div>
   </div>
 </div>
-
-<!-- LOAD PROFILE MODAL -->
-
 <div class="modal-overlay" id="modal-load-profile" onclick="closeModal('modal-load-profile')">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
     <div class="modal-title">Load Profile</div>
     <div class="modal-body" id="profile-list-body">
-      <div class="empty-state"><div class="empty-icon">-</div><div class="empty-text">No profiles saved yet.</div></div>
+      <div class="empty-state"><div class="empty-text">No profiles saved yet.</div></div>
     </div>
   </div>
 </div>
-
 <script>
-// ════ State ════
-let state = {
-  proxyUrl:'', sftpHost:'', sftpPort:2222, sftpUser:'', sftpPass:'',
-  worldName:'', worldPath:'', bpPath:'', rpPath:'',
-  packs:[], activeBP:[], activeRP:[],
-  profiles:[], backups:[],
-};
-let typeFilter='all', searchQuery='', newPackType='bp', currentTab='world';
-let browserMode='world', browserCurrentPath='', browserSelectedPath='', browserEntries=[];
-
+let state={proxyUrl:'',sftpHost:'',sftpPort:2222,sftpUser:'',sftpPass:'',worldName:'',worldPath:'',bpPath:'',rpPath:'',packs:[],activeBP:[],activeRP:[],profiles:[],backups:[]};
+let typeFilter='all',searchQuery='',newPackType='bp',currentTab='world';
+let browserMode='world',browserCurrentPath='',browserSelectedPath='',browserEntries=[];
 function saveState(){try{localStorage.setItem('cc_v5',JSON.stringify(state))}catch(e){}}
 function loadState(){try{const r=localStorage.getItem('cc_v5');if(r)Object.assign(state,JSON.parse(r))}catch(e){}}
-
-// ════ Proxy ════
-async function proxyPost(endpoint, extra){
-  if(!state.proxyUrl) throw new Error('Proxy URL not set. Go to Settings > SFTP Credentials.');
-  const res = await fetch(state.proxyUrl.replace(/\/$/,'')+endpoint, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      host:state.sftpHost, port:state.sftpPort,
-      username:state.sftpUser, password:state.sftpPass,
-      ...extra
-    })
-  });
-  const d = await res.json();
-  if(!d.ok) throw new Error(d.error || 'Proxy error');
-  return d;
+async function proxyPost(endpoint,extra){
+  if(!state.proxyUrl)throw new Error('Proxy URL not set. Go to Settings > SFTP Credentials.');
+  const res=await fetch(state.proxyUrl.replace(/\/$/,'')+endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host:state.sftpHost,port:state.sftpPort,username:state.sftpUser,password:state.sftpPass,...extra})});
+  const d=await res.json();if(!d.ok)throw new Error(d.error||'Proxy error');return d;
 }
-
-// ════ Scan Folders ════
 async function scanFolders(){
-  if(!state.bpPath && !state.rpPath){
-    showToast('Set BP/RP paths first');
-    return;
-  }
-  const btn = document.getElementById('scan-btn');
-  btn.textContent = 'Scanning...';
-  btn.disabled = true;
-
-  try {
-    let found = [];
-
-    // Scan behavior_packs
-    if(state.bpPath){
-      try {
-        const d = await proxyPost('/list', {path: state.bpPath});
-        const bpFolders = d.items.filter(i => i.isDir);
-        bpFolders.forEach(f => {
-          found.push({
-            id: 'bp_' + f.name,
-            name: f.name,
-            type: 'bp',
-            version: '1.0.0',
-            uuid: 'bp-' + f.name,
-            path: f.path,
-          });
-        });
-      } catch(e){
-        showToast('Could not scan BP folder: ' + e.message);
-      }
-    }
-
-    // Scan resource_packs
-    if(state.rpPath){
-      try {
-        const d = await proxyPost('/list', {path: state.rpPath});
-        const rpFolders = d.items.filter(i => i.isDir);
-        rpFolders.forEach(f => {
-          found.push({
-            id: 'rp_' + f.name,
-            name: f.name,
-            type: 'rp',
-            version: '1.0.0',
-            uuid: 'rp-' + f.name,
-            path: f.path,
-          });
-        });
-      } catch(e){
-        showToast('Could not scan RP folder: ' + e.message);
-      }
-    }
-
-    if(found.length === 0){
-      showToast('No pack folders found');
-      return;
-    }
-
-    // Merge: keep existing packs, add new ones, don't duplicate
-    const existingIds = new Set(state.packs.map(p => p.id));
-    const newPacks = found.filter(p => !existingIds.has(p.id));
-    state.packs = [...state.packs, ...newPacks];
-    saveState();
-    renderWorldManager();
-    if(currentTab === 'packs') refreshAllPacks();
-    showToast('Found ' + found.length + ' packs (' + newPacks.length + ' new)');
-
-  } finally {
-    btn.textContent = 'Scan Folders';
-    btn.disabled = !(state.bpPath || state.rpPath);
-  }
+  if(!state.bpPath&&!state.rpPath){showToast('Set BP/RP paths first');return;}
+  const btn=document.getElementById('scan-btn');btn.textContent='Scanning...';btn.disabled=true;
+  try{
+    let found=[];
+    if(state.bpPath){try{const d=await proxyPost('/list',{path:state.bpPath});d.items.filter(i=>i.isDir).forEach(f=>{found.push({id:'bp_'+f.name,name:f.name,type:'bp',version:'1.0.0',uuid:'bp-'+f.name,path:f.path});});}catch(e){showToast('BP scan error: '+e.message);}}
+    if(state.rpPath){try{const d=await proxyPost('/list',{path:state.rpPath});d.items.filter(i=>i.isDir).forEach(f=>{found.push({id:'rp_'+f.name,name:f.name,type:'rp',version:'1.0.0',uuid:'rp-'+f.name,path:f.path});});}catch(e){showToast('RP scan error: '+e.message);}}
+    if(!found.length){showToast('No pack folders found');return;}
+    const existingIds=new Set(state.packs.map(p=>p.id));
+    const newPacks=found.filter(p=>!existingIds.has(p.id));
+    state.packs=[...state.packs,...newPacks];
+    saveState();renderWorldManager();if(currentTab==='packs')refreshAllPacks();
+    showToast('Found '+found.length+' packs ('+newPacks.length+' new)');
+  }finally{btn.textContent='Scan Folders';btn.disabled=!(state.bpPath||state.rpPath);}
 }
-
-function updateScanBtn(){
-  const btn = document.getElementById('scan-btn');
-  if(btn) btn.disabled = !(state.bpPath || state.rpPath);
-}
-
-// ════ Tabs ════
+function updateScanBtn(){const btn=document.getElementById('scan-btn');if(btn)btn.disabled=!(state.bpPath||state.rpPath);}
 function switchTab(tab){
-  ['world','packs','dash','settings'].forEach(t=>{
-    document.getElementById('panel-'+t).style.display = t===tab?'block':'none';
-    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
-  });
-  document.getElementById('apply-footer').style.display = tab==='world'?'flex':'none';
-  currentTab = tab;
-  if(tab==='dash') refreshDashboard();
-  if(tab==='packs') refreshAllPacks();
+  ['world','packs','dash','settings'].forEach(t=>{document.getElementById('panel-'+t).style.display=t===tab?'block':'none';document.getElementById('tab-'+t).classList.toggle('active',t===tab);});
+  document.getElementById('apply-footer').style.display=tab==='world'?'flex':'none';
+  currentTab=tab;if(tab==='dash')refreshDashboard();if(tab==='packs')refreshAllPacks();
 }
-
-// ════ SFTP Browser ════
 function openPathBrowser(mode){
-  browserMode = mode;
-  const titles = {world:'Select World Folder', bp:'Select Behavior Packs Folder', rp:'Select Resource Packs Folder'};
-  document.getElementById('browser-title').textContent = titles[mode] || 'Browse Server';
-  browserSelectedPath = '';
-  document.getElementById('selected-path-bar').classList.remove('visible');
-  document.getElementById('use-path-btn').disabled = true;
-  document.getElementById('use-path-btn').style.opacity = '0.4';
+  browserMode=mode;
+  const titles={world:'Select World Folder',bp:'Select Behavior Packs Folder',rp:'Select Resource Packs Folder'};
+  document.getElementById('browser-title').textContent=titles[mode]||'Browse Server';
+  browserSelectedPath='';document.getElementById('selected-path-bar').classList.remove('visible');
+  document.getElementById('use-path-btn').disabled=true;document.getElementById('use-path-btn').style.opacity='0.4';
   openModal('modal-browser');
-  let start = '.';
-  if(mode==='world' && state.worldPath) start = state.worldPath;
-  else if(mode==='bp' && state.bpPath) start = state.bpPath;
-  else if(mode==='rp' && state.rpPath) start = state.rpPath;
-  else if(state.worldPath) start = state.worldPath;
+  let start='.';
+  if(mode==='world'&&state.worldPath)start=state.worldPath;
+  else if(mode==='bp'&&state.bpPath)start=state.bpPath;
+  else if(mode==='rp'&&state.rpPath)start=state.rpPath;
+  else if(state.worldPath)start=state.worldPath;
   browserNav(start);
 }
-
 async function browserNav(path){
-  if(!state.sftpHost || !state.sftpUser){
-    document.getElementById('browser-list').innerHTML =
-      '<div class="browser-status" style="color:var(--warn)">Configure SFTP credentials first in Settings.</div>';
-    return;
-  }
-  document.getElementById('browser-list').innerHTML = '<div class="browser-status">Loading...</div>';
-  try {
-    const d = await proxyPost('/list', {path});
-    browserCurrentPath = d.path;
-    browserEntries = d.items;
-    document.getElementById('browser-path-display').textContent = d.path;
-    renderBrowserList();
-  } catch(err){
-    document.getElementById('browser-list').innerHTML =
-      '<div class="browser-status" style="color:var(--err)">Error: ' + err.message + '</div>';
-  }
+  if(!state.sftpHost||!state.sftpUser){document.getElementById('browser-list').innerHTML='<div class="browser-status" style="color:var(--warn)">Configure SFTP credentials first in Settings.</div>';return;}
+  document.getElementById('browser-list').innerHTML='<div class="browser-status">Loading...</div>';
+  try{const d=await proxyPost('/list',{path});browserCurrentPath=d.path;browserEntries=d.items;document.getElementById('browser-path-display').textContent=d.path;renderBrowserList();}
+  catch(err){document.getElementById('browser-list').innerHTML='<div class="browser-status" style="color:var(--err)">Error: '+err.message+'</div>';}
 }
-
 function renderBrowserList(){
-  const el = document.getElementById('browser-list');
-  if(!browserEntries.length){
-    el.innerHTML = '<div class="browser-status">(empty folder)</div>';
-    return;
-  }
-  const dirs = browserEntries.filter(e=>e.isDir);
-  const files = browserEntries.filter(e=>!e.isDir);
-  el.innerHTML = [...dirs,...files].map(item => {
-    const i = browserEntries.indexOf(item);
-    const sel = item.path===browserSelectedPath ? ' selected' : '';
-    const icon = item.isDir ? 'folder' : 'file';
-    const arrow = item.isDir ? '<span class="browser-item-arrow">&rsaquo;</span>' : '';
-    return '<div class="browser-item' + sel + '" onclick="browserClick(' + i + ')" ondblclick="browserDbl(' + i + ')">'
-      + '<span class="browser-item-icon">' + (item.isDir ? '[D]' : '[F]') + '</span>'
-      + '<span class="browser-item-name">' + item.name + '</span>'
-      + arrow
-      + '</div>';
+  const el=document.getElementById('browser-list');
+  if(!browserEntries.length){el.innerHTML='<div class="browser-status">(empty folder)</div>';return;}
+  const dirs=browserEntries.filter(e=>e.isDir),files=browserEntries.filter(e=>!e.isDir);
+  el.innerHTML=[...dirs,...files].map(item=>{
+    const i=browserEntries.indexOf(item),sel=item.path===browserSelectedPath?' selected':'';
+    const arrow=item.isDir?'<span class="browser-item-arrow">&rsaquo;</span>':'';
+    return '<div class="browser-item'+sel+'" onclick="browserClick('+i+')" ondblclick="browserDbl('+i+')"><span class="browser-item-icon">'+(item.isDir?'[D]':'[F]')+'</span><span class="browser-item-name">'+item.name+'</span>'+arrow+'</div>';
   }).join('');
 }
-
-function browserClick(i){
-  const item = browserEntries[i];
-  if(!item || !item.isDir) return;
-  browserSelectedPath = item.path;
-  document.getElementById('selected-path-text').textContent = item.path;
-  document.getElementById('selected-path-bar').classList.add('visible');
-  document.getElementById('use-path-btn').disabled = false;
-  document.getElementById('use-path-btn').style.opacity = '1';
-  renderBrowserList();
-}
-
-function browserDbl(i){
-  const item = browserEntries[i];
-  if(item && item.isDir) browserNav(item.path);
-}
-
-function browserGoUp(){
-  const parts = browserCurrentPath.replace(/\/$/,'').split('/');
-  if(parts.length <= 1) return;
-  parts.pop();
-  browserNav(parts.join('/') || '/');
-}
-
+function browserClick(i){const item=browserEntries[i];if(!item||!item.isDir)return;browserSelectedPath=item.path;document.getElementById('selected-path-text').textContent=item.path;document.getElementById('selected-path-bar').classList.add('visible');document.getElementById('use-path-btn').disabled=false;document.getElementById('use-path-btn').style.opacity='1';renderBrowserList();}
+function browserDbl(i){const item=browserEntries[i];if(item&&item.isDir)browserNav(item.path);}
+function browserGoUp(){const parts=browserCurrentPath.replace(/\/$/,'').split('/');if(parts.length<=1)return;parts.pop();browserNav(parts.join('/')||'/');}
 function useSelectedPath(){
-  if(!browserSelectedPath) return;
-  const shortName = browserSelectedPath.split('/').pop() || browserSelectedPath;
+  if(!browserSelectedPath)return;
+  const shortName=browserSelectedPath.split('/').pop()||browserSelectedPath;
   if(browserMode==='world'){
-    state.worldPath = browserSelectedPath;
-    state.worldName = shortName;
-    // Auto-set BP/RP inside the world folder
-    state.bpPath = browserSelectedPath + '/behavior_packs';
-    state.rpPath = browserSelectedPath + '/resource_packs';
-    updatePathDisplays();
-    updateScanBtn();
-    saveState();
-    closeModal('modal-browser');
-    showToast('World set - tap Scan Folders to load packs');
-    return;
+    state.worldPath=browserSelectedPath;state.worldName=shortName;
+    state.bpPath=browserSelectedPath+'/behavior_packs';state.rpPath=browserSelectedPath+'/resource_packs';
+    updatePathDisplays();updateScanBtn();saveState();closeModal('modal-browser');showToast('World set - tap Scan Folders to load packs');return;
   }
-  if(browserMode==='bp') state.bpPath = browserSelectedPath;
-  if(browserMode==='rp') state.rpPath = browserSelectedPath;
-  updatePathDisplays();
-  updateScanBtn();
-  saveState();
-  closeModal('modal-browser');
-  showToast('Path set: ' + shortName);
+  if(browserMode==='bp')state.bpPath=browserSelectedPath;
+  if(browserMode==='rp')state.rpPath=browserSelectedPath;
+  updatePathDisplays();updateScanBtn();saveState();closeModal('modal-browser');showToast('Path set: '+shortName);
 }
-
 function updatePathDisplays(){
-  document.getElementById('world-name-display').textContent = state.worldName || 'No world selected';
-  document.getElementById('world-path-display').textContent = state.worldPath || 'Tap to browse server';
-  const bpEl = document.getElementById('bp-path-display');
-  bpEl.textContent = state.bpPath ? (state.bpPath.split('/').pop() || state.bpPath) : 'Not set';
-  bpEl.className = 'path-card-val' + (state.bpPath ? ' set' : '');
-  const rpEl = document.getElementById('rp-path-display');
-  rpEl.textContent = state.rpPath ? (state.rpPath.split('/').pop() || state.rpPath) : 'Not set';
-  rpEl.className = 'path-card-val' + (state.rpPath ? ' set' : '');
-  document.getElementById('setting-world-path').textContent = state.worldPath || 'Not set';
-  document.getElementById('setting-bp-path').textContent = state.bpPath || 'Not set';
-  document.getElementById('setting-rp-path').textContent = state.rpPath || 'Not set';
+  document.getElementById('world-name-display').textContent=state.worldName||'No world selected';
+  document.getElementById('world-path-display').textContent=state.worldPath||'Tap to browse server';
+  const bpEl=document.getElementById('bp-path-display');bpEl.textContent=state.bpPath?(state.bpPath.split('/').pop()||state.bpPath):'Not set';bpEl.className='path-card-val'+(state.bpPath?' set':'');
+  const rpEl=document.getElementById('rp-path-display');rpEl.textContent=state.rpPath?(state.rpPath.split('/').pop()||state.rpPath):'Not set';rpEl.className='path-card-val'+(state.rpPath?' set':'');
+  document.getElementById('setting-world-path').textContent=state.worldPath||'Not set';
+  document.getElementById('setting-bp-path').textContent=state.bpPath||'Not set';
+  document.getElementById('setting-rp-path').textContent=state.rpPath||'Not set';
 }
-
-// ════ Server settings ════
-function openServerModal(){
-  document.getElementById('s-proxy').value = state.proxyUrl;
-  document.getElementById('s-host').value  = state.sftpHost;
-  document.getElementById('s-port').value  = state.sftpPort || 2222;
-  document.getElementById('s-user').value  = state.sftpUser;
-  document.getElementById('s-pass').value  = state.sftpPass;
-  document.getElementById('test-result').textContent = '';
-  openModal('modal-server');
-}
-
-function saveServerSettings(){
-  state.proxyUrl = document.getElementById('s-proxy').value.trim();
-  state.sftpHost = document.getElementById('s-host').value.trim();
-  state.sftpPort = parseInt(document.getElementById('s-port').value) || 2222;
-  state.sftpUser = document.getElementById('s-user').value.trim();
-  state.sftpPass = document.getElementById('s-pass').value;
-  saveState();
-  setConnLabel(state.sftpHost ? 'configured' : 'none');
-  closeModal('modal-server');
-  showToast('Server settings saved');
-}
-
+function openServerModal(){document.getElementById('s-proxy').value=state.proxyUrl;document.getElementById('s-host').value=state.sftpHost;document.getElementById('s-port').value=state.sftpPort||2222;document.getElementById('s-user').value=state.sftpUser;document.getElementById('s-pass').value=state.sftpPass;document.getElementById('test-result').textContent='';openModal('modal-server');}
+function saveServerSettings(){state.proxyUrl=document.getElementById('s-proxy').value.trim();state.sftpHost=document.getElementById('s-host').value.trim();state.sftpPort=parseInt(document.getElementById('s-port').value)||2222;state.sftpUser=document.getElementById('s-user').value.trim();state.sftpPass=document.getElementById('s-pass').value;saveState();setConnLabel(state.sftpHost?'configured':'none');closeModal('modal-server');showToast('Server settings saved');}
 async function testConnection(){
-  const btn=document.getElementById('test-btn'), res=document.getElementById('test-result');
-  const proxy=document.getElementById('s-proxy').value.trim();
-  const host=document.getElementById('s-host').value.trim();
-  const user=document.getElementById('s-user').value.trim();
+  const btn=document.getElementById('test-btn'),res=document.getElementById('test-result');
+  const proxy=document.getElementById('s-proxy').value.trim(),host=document.getElementById('s-host').value.trim(),user=document.getElementById('s-user').value.trim();
   if(!proxy){res.style.color='var(--warn)';res.textContent='Enter proxy URL';return;}
   if(!host){res.style.color='var(--warn)';res.textContent='Enter SFTP host';return;}
   if(!user){res.style.color='var(--warn)';res.textContent='Enter username';return;}
-  btn.textContent='Connecting...'; btn.disabled=true; res.textContent='';
-  try{
-    const r = await fetch(proxy.replace(/\/$/,'')+'/connect',{
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({host, port:parseInt(document.getElementById('s-port').value)||2222, username:user, password:document.getElementById('s-pass').value})
-    });
-    const d = await r.json();
-    if(d.ok){res.style.color='var(--ok)';res.textContent='Connected! Home: '+d.home;setConnLabel('ok');}
-    else{res.style.color='var(--err)';res.textContent='Failed: '+(d.error||'unknown');setConnLabel('err');}
-  }catch(e){res.style.color='var(--err)';res.textContent='Error: '+e.message;setConnLabel('err');}
+  btn.textContent='Connecting...';btn.disabled=true;res.textContent='';
+  try{const r=await fetch(proxy.replace(/\/$/,'')+'/connect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({host,port:parseInt(document.getElementById('s-port').value)||2222,username:user,password:document.getElementById('s-pass').value})});const d=await r.json();if(d.ok){res.style.color='var(--ok)';res.textContent='Connected! Home: '+d.home;setConnLabel('ok');}else{res.style.color='var(--err)';res.textContent='Failed: '+(d.error||'unknown');setConnLabel('err');}}
+  catch(e){res.style.color='var(--err)';res.textContent='Error: '+e.message;setConnLabel('err');}
   finally{btn.textContent='Test Connection';btn.disabled=false;}
 }
-
-function setConnLabel(status){
-  const dot=document.getElementById('conn-dot'), lbl=document.getElementById('conn-label');
-  dot.className = 'conn-dot' + (status==='ok'?' ok':status==='err'?' err':'');
-  lbl.textContent = status==='ok' ? 'Connected - '+state.sftpHost : status==='err' ? 'Connection error' : state.sftpHost ? 'Configured - '+state.sftpHost : 'Not configured';
-}
-
-// ════ Pack rendering ════
+function setConnLabel(status){const dot=document.getElementById('conn-dot'),lbl=document.getElementById('conn-label');dot.className='conn-dot'+(status==='ok'?' ok':status==='err'?' err':'');lbl.textContent=status==='ok'?'Connected - '+state.sftpHost:status==='err'?'Connection error':state.sftpHost?'Configured - '+state.sftpHost:'Not configured';}
 function renderWorldManager(){
-  const ap=getActivePacks(), ip=getInactivePacks(), q=searchQuery.toLowerCase();
-  const fp = p => {
-    if(q && !p.name.toLowerCase().includes(q)) return false;
-    if(typeFilter==='bp' && p.type!=='bp') return false;
-    if(typeFilter==='rp' && p.type!=='rp') return false;
-    return true;
-  };
-  const fa=ap.filter(fp), fi=ip.filter(fp);
-  document.getElementById('active-count').textContent = fa.length;
-  document.getElementById('active-list').innerHTML = fa.length===0
-    ? '<div class="empty-state"><div class="empty-text">No active packs.</div></div>'
-    : fa.map(p => {
-        const ol = p.type==='bp' ? state.activeBP : state.activeRP;
-        const idx = ol.indexOf(p.id);
-        return '<div class="pack-card active-card ' + p.type + '">'
-          + '<div class="order-badge">' + (idx+1) + '</div>'
-          + '<div class="type-badge">' + p.type.toUpperCase() + '</div>'
-          + '<div class="pack-info"><div class="pack-name">' + p.name + '</div><div class="pack-meta">v' + p.version + '</div></div>'
-          + '<div class="order-controls">'
-          + '<div class="ord-btn" onclick="moveUp(\'' + p.id + '\',\'' + p.type + '\')">^</div>'
-          + '<div class="ord-btn" onclick="moveDown(\'' + p.id + '\',\'' + p.type + '\')">v</div>'
-          + '</div>'
-          + '<div class="action-btn btn-deactivate" onclick="deactivate(\'' + p.id + '\')">X</div>'
-          + '</div>';
-      }).join('');
-  document.getElementById('inactive-count').textContent = fi.length;
-  document.getElementById('inactive-list').innerHTML = fi.length===0
-    ? '<div class="empty-state"><div class="empty-text">All packs active!</div></div>'
-    : fi.map(p => '<div class="pack-card ' + p.type + '">'
-        + '<div class="type-badge">' + p.type.toUpperCase() + '</div>'
-        + '<div class="pack-info"><div class="pack-name">' + p.name + '</div><div class="pack-meta">v' + p.version + '</div></div>'
-        + '<div class="action-btn btn-activate" onclick="activate(\'' + p.id + '\')">+</div>'
-        + '</div>').join('');
+  const ap=getActivePacks(),ip=getInactivePacks(),q=searchQuery.toLowerCase();
+  const fp=p=>{if(q&&!p.name.toLowerCase().includes(q))return false;if(typeFilter==='bp'&&p.type!=='bp')return false;if(typeFilter==='rp'&&p.type!=='rp')return false;return true;};
+  const fa=ap.filter(fp),fi=ip.filter(fp);
+  document.getElementById('active-count').textContent=fa.length;
+  document.getElementById('active-list').innerHTML=fa.length===0?'<div class="empty-state"><div class="empty-text">No active packs.</div></div>':fa.map(p=>{const ol=p.type==='bp'?state.activeBP:state.activeRP,idx=ol.indexOf(p.id);return'<div class="pack-card active-card '+p.type+'"><div class="order-badge">'+(idx+1)+'</div><div class="type-badge">'+p.type.toUpperCase()+'</div><div class="pack-info"><div class="pack-name">'+p.name+'</div><div class="pack-meta">v'+p.version+'</div></div><div class="order-controls"><div class="ord-btn" onclick="moveUp(\''+p.id+'\',\''+p.type+'\')">^</div><div class="ord-btn" onclick="moveDown(\''+p.id+'\',\''+p.type+'\')">v</div></div><div class="action-btn btn-deactivate" onclick="deactivate(\''+p.id+'\')">X</div></div>';}).join('');
+  document.getElementById('inactive-count').textContent=fi.length;
+  document.getElementById('inactive-list').innerHTML=fi.length===0?'<div class="empty-state"><div class="empty-text">All packs active!</div></div>':fi.map(p=>'<div class="pack-card '+p.type+'"><div class="type-badge">'+p.type.toUpperCase()+'</div><div class="pack-info"><div class="pack-name">'+p.name+'</div><div class="pack-meta">v'+p.version+'</div></div><div class="action-btn btn-activate" onclick="activate(\''+p.id+'\')">+</div></div>').join('');
   updateStats();
-  const tot = state.activeBP.length + state.activeRP.length;
-  document.getElementById('apply-info').textContent = tot>0 ? state.activeBP.length+' BP / '+state.activeRP.length+' RP active' : 'No packs active';
-  document.getElementById('apply-btn').disabled = tot===0;
+  const tot=state.activeBP.length+state.activeRP.length;
+  document.getElementById('apply-info').textContent=tot>0?state.activeBP.length+' BP / '+state.activeRP.length+' RP active':'No packs active';
+  document.getElementById('apply-btn').disabled=tot===0;
 }
-
-function getActivePacks(){return [...state.activeBP,...state.activeRP].map(id=>state.packs.find(p=>p.id===id)).filter(Boolean);}
+function getActivePacks(){return[...state.activeBP,...state.activeRP].map(id=>state.packs.find(p=>p.id===id)).filter(Boolean);}
 function getInactivePacks(){const s=new Set([...state.activeBP,...state.activeRP]);return state.packs.filter(p=>!s.has(p.id));}
-
-function updateStats(){
-  document.getElementById('stat-bp').textContent = state.activeBP.length;
-  document.getElementById('stat-rp').textContent = state.activeRP.length;
-  document.getElementById('stat-total').textContent = state.packs.length;
-  const iss = Math.abs(state.packs.filter(p=>p.type==='bp').length - state.packs.filter(p=>p.type==='rp').length);
-  document.getElementById('stat-issues').textContent = iss;
-  document.getElementById('stat-issues').style.color = iss>0 ? 'var(--warn)' : 'var(--ok)';
-}
-
-function refreshAllPacks(){
-  const el = document.getElementById('all-packs-list');
-  if(!state.packs.length){el.innerHTML='<div class="empty-state"><div class="empty-text">No packs yet. Tap Scan Folders on the World tab.</div></div>';return;}
-  const s = new Set([...state.activeBP,...state.activeRP]);
-  el.innerHTML = state.packs.map(p =>
-    '<div class="pack-card ' + p.type + '" style="' + (s.has(p.id)?'border-color:rgba(61,220,132,.3)':'') + '">'
-    + '<div class="type-badge">' + p.type.toUpperCase() + '</div>'
-    + '<div class="pack-info"><div class="pack-name">' + p.name + '</div><div class="pack-meta">v' + p.version + ' - ' + (s.has(p.id)?'active':'inactive') + '</div></div>'
-    + '<div class="action-btn" onclick="deletePack(\'' + p.id + '\')" style="background:rgba(255,85,102,.1);color:var(--err)">X</div>'
-    + '</div>'
-  ).join('');
-}
-
-function refreshDashboard(){
-  document.getElementById('d-bp').textContent = state.packs.filter(p=>p.type==='bp').length;
-  document.getElementById('d-rp').textContent = state.packs.filter(p=>p.type==='rp').length;
-  document.getElementById('d-active').textContent = state.activeBP.length + state.activeRP.length;
-  const iss = Math.abs(state.packs.filter(p=>p.type==='bp').length - state.packs.filter(p=>p.type==='rp').length);
-  document.getElementById('d-issues').textContent = iss;
-  const ap = getActivePacks();
-  document.getElementById('load-order-preview').innerHTML = ap.length===0
-    ? '<div class="empty-state" style="padding:20px"><div class="empty-text">No active packs.</div></div>'
-    : ap.map((p,i) =>
-        '<div class="confirm-row">'
-        + '<div class="confirm-idx">' + (i+1) + '</div>'
-        + '<span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;padding:3px 7px;border-radius:6px;background:' + (p.type==='bp'?'rgba(79,143,255,.15)':'rgba(155,111,255,.15)') + ';color:' + (p.type==='bp'?'var(--bp-color)':'var(--rp-color)') + '">' + p.type.toUpperCase() + '</span>'
-        + '<div style="flex:1;font-size:14px;color:var(--fg)">' + p.name + '</div>'
-        + '<div style="font-size:11px;color:var(--fg2);font-family:\'JetBrains Mono\',monospace">v' + p.version + '</div>'
-        + '</div>'
-      ).join('');
-  document.getElementById('validation-list').innerHTML = iss===0
-    ? '<div class="empty-state"><div class="empty-text">No issues detected.</div></div>'
-    : '<div class="pack-card" style="border-color:var(--warn)"><div class="pack-info"><div class="pack-name" style="color:var(--warn)">Unmatched packs</div><div class="pack-meta">BP count does not match RP count</div></div></div>';
-}
-
-// ════ Pack actions ════
+function updateStats(){document.getElementById('stat-bp').textContent=state.activeBP.length;document.getElementById('stat-rp').textContent=state.activeRP.length;document.getElementById('stat-total').textContent=state.packs.length;const iss=Math.abs(state.packs.filter(p=>p.type==='bp').length-state.packs.filter(p=>p.type==='rp').length);document.getElementById('stat-issues').textContent=iss;document.getElementById('stat-issues').style.color=iss>0?'var(--warn)':'var(--ok)';}
+function refreshAllPacks(){const el=document.getElementById('all-packs-list');if(!state.packs.length){el.innerHTML='<div class="empty-state"><div class="empty-text">No packs yet. Tap Scan Folders on the World tab.</div></div>';return;}const s=new Set([...state.activeBP,...state.activeRP]);el.innerHTML=state.packs.map(p=>'<div class="pack-card '+p.type+'" style="'+(s.has(p.id)?'border-color:rgba(61,220,132,.3)':'')+'"><div class="type-badge">'+p.type.toUpperCase()+'</div><div class="pack-info"><div class="pack-name">'+p.name+'</div><div class="pack-meta">v'+p.version+' - '+(s.has(p.id)?'active':'inactive')+'</div></div><div class="action-btn" onclick="deletePack(\''+p.id+'\')" style="background:rgba(255,85,102,.1);color:var(--err)">X</div></div>').join('');}
+function refreshDashboard(){document.getElementById('d-bp').textContent=state.packs.filter(p=>p.type==='bp').length;document.getElementById('d-rp').textContent=state.packs.filter(p=>p.type==='rp').length;document.getElementById('d-active').textContent=state.activeBP.length+state.activeRP.length;const iss=Math.abs(state.packs.filter(p=>p.type==='bp').length-state.packs.filter(p=>p.type==='rp').length);document.getElementById('d-issues').textContent=iss;const ap=getActivePacks();document.getElementById('load-order-preview').innerHTML=ap.length===0?'<div class="empty-state" style="padding:20px"><div class="empty-text">No active packs.</div></div>':ap.map((p,i)=>'<div class="confirm-row"><div class="confirm-idx">'+(i+1)+'</div><span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;padding:3px 7px;border-radius:6px;background:'+(p.type==='bp'?'rgba(79,143,255,.15)':'rgba(155,111,255,.15)')+';color:'+(p.type==='bp'?'var(--bp-color)':'var(--rp-color)')+'">'+p.type.toUpperCase()+'</span><div style="flex:1;font-size:14px;color:var(--fg)">'+p.name+'</div><div style="font-size:11px;color:var(--fg2);font-family:\'JetBrains Mono\',monospace">v'+p.version+'</div></div>').join('');document.getElementById('validation-list').innerHTML=iss===0?'<div class="empty-state"><div class="empty-text">No issues detected.</div></div>':'<div class="pack-card" style="border-color:var(--warn)"><div class="pack-info"><div class="pack-name" style="color:var(--warn)">Unmatched packs</div><div class="pack-meta">BP count does not match RP count</div></div></div>';}
 function activate(id){const p=state.packs.find(x=>x.id===id);if(!p)return;if(p.type==='bp'&&!state.activeBP.includes(id))state.activeBP.push(id);if(p.type==='rp'&&!state.activeRP.includes(id))state.activeRP.push(id);saveState();renderWorldManager();showToast('Activated: '+p.name);}
 function deactivate(id){state.activeBP=state.activeBP.filter(i=>i!==id);state.activeRP=state.activeRP.filter(i=>i!==id);saveState();renderWorldManager();showToast('Deactivated');}
 function moveUp(id,type){const l=type==='bp'?state.activeBP:state.activeRP,i=l.indexOf(id);if(i>0){[l[i-1],l[i]]=[l[i],l[i-1]];}saveState();renderWorldManager();}
@@ -817,8 +486,6 @@ function moveDown(id,type){const l=type==='bp'?state.activeBP:state.activeRP,i=l
 function deletePack(id){state.packs=state.packs.filter(p=>p.id!==id);state.activeBP=state.activeBP.filter(i=>i!==id);state.activeRP=state.activeRP.filter(i=>i!==id);saveState();renderWorldManager();refreshAllPacks();}
 function applyFilter(){searchQuery=document.getElementById('search-input').value;renderWorldManager();}
 function setTypeFilter(t,btn){typeFilter=t;document.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderWorldManager();}
-
-// ════ Modals ════
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function openAddPackModal(){document.getElementById('new-pack-name').value='';document.getElementById('new-pack-version').value='1.0.0';setNewPackType('bp');openModal('modal-add-pack');}
@@ -836,23 +503,11 @@ function loadProfile(id){const p=state.profiles.find(x=>x.id===id);if(!p)return;
 function deleteProfile(id){state.profiles=state.profiles.filter(p=>p.id!==id);saveState();openLoadProfileModal();updateProfileCount();}
 function updateProfileCount(){const n=state.profiles.length;document.getElementById('profile-count-label').textContent=n===0?'No profiles saved':n+' profile'+(n>1?'s':'')+' saved';}
 function clearAllData(){if(!confirm('Clear all data?'))return;state={proxyUrl:'',sftpHost:'',sftpPort:2222,sftpUser:'',sftpPass:'',worldName:'',worldPath:'',bpPath:'',rpPath:'',packs:[],activeBP:[],activeRP:[],profiles:[],backups:[]};saveState();applyStateToUI();showToast('Cleared');}
-
-function applyStateToUI(){
-  updatePathDisplays();
-  updateProfileCount();
-  updateScanBtn();
-  setConnLabel(state.sftpHost ? 'configured' : 'none');
-  renderWorldManager();
-}
-
-// ════ Toast ════
+function applyStateToUI(){updatePathDisplays();updateProfileCount();updateScanBtn();setConnLabel(state.sftpHost?'configured':'none');renderWorldManager();}
 let toastTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
-
-// ════ Init ════
 loadState();
 applyStateToUI();
 </script>
-
 </body>
 </html>
