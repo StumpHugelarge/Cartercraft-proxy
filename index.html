@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Cartercraft" />
+  <meta name="theme-color" content="#0f0f1a" />
+  <title>Cartercraft Addon Manager</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap');
+    :root {
+      --bg:#0a0a14;--surface:#111120;--card:#161628;--border:#2a2a45;
+      --accent:#4f8fff;--accent2:#9b6fff;--ok:#3ddc84;--warn:#ffcc44;--err:#ff5566;
+      --fg:#e8e8ff;--fg2:#7878aa;--bp-color:#4f8fff;--rp-color:#9b6fff;
+      --safe-top:env(safe-area-inset-top);--safe-bot:env(safe-area-inset-bottom);
+    }
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;background:var(--bg);color:var(--fg);font-family:'Outfit',sans-serif;overflow:hidden;overscroll-behavior:none}
+    #app{display:flex;flex-direction:column;height:100dvh;max-width:430px;margin:0 auto;overflow:hidden}
+    header{background:var(--surface);border-bottom:1px solid var(--border);padding:calc(var(--safe-top) + 14px) 20px 14px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;z-index:10}
+    .app-name{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;letter-spacing:1px;color:var(--accent);line-height:1}
+    .app-sub{font-size:11px;color:var(--fg2);font-family:'JetBrains Mono',monospace;margin-top:2px}
+    .header-actions{display:flex;gap:10px}
+    .icon-btn{width:38px;height:38px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--fg2);transition:all .15s;-webkit-user-select:none}
+    .icon-btn:active{transform:scale(.93);background:var(--border)}
+    .stats-bar{display:flex;gap:8px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+    .stat-pill{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center}
+    .stat-num{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;line-height:1}
+    .stat-label{font-size:9px;color:var(--fg2);font-family:'JetBrains Mono',monospace;margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+    .tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+    .tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--fg2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;-webkit-user-select:none}
+    .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .tab-icon{font-size:16px;display:block;margin-bottom:1px}
+    .content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:12px 14px calc(var(--safe-bot) + 12px)}
+    .world-selector{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s}
+    .world-selector:active{border-color:var(--accent)}
+    .world-icon{width:44px;height:44px;background:linear-gradient(135deg,#1a3a6a,#2a1a5a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .world-info{flex:1;min-width:0}
+    .world-name{font-size:15px;font-weight:600;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .world-path{font-size:11px;color:var(--fg2);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .chevron{color:var(--fg2);font-size:18px}
+    .path-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+    .path-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .15s}
+    .path-card:active{border-color:var(--accent)}
+    .path-card-label{font-size:9px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .path-card-val{font-size:11px;color:var(--fg2);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .path-card-val.set{color:var(--ok)}
+    /* Scan bar */
+    .scan-bar{display:flex;gap:8px;margin-bottom:12px}
+    .scan-btn{flex:1;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;padding:11px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .scan-btn:active{transform:scale(.97);opacity:.9}
+    .scan-btn:disabled{opacity:.35;cursor:default;background:var(--border);color:var(--fg2)}
+    /* Filter */
+    .filter-bar{display:flex;gap:8px;margin-bottom:12px;align-items:center}
+    .search-wrap{flex:1;position:relative}
+    .search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 12px 9px 34px;color:var(--fg);font-family:'Outfit',sans-serif;font-size:14px;outline:none;-webkit-appearance:none}
+    .search-wrap input:focus{border-color:var(--accent)}
+    .search-wrap input::placeholder{color:var(--fg2)}
+    .search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--fg2);font-size:14px}
+    .type-seg{display:flex;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .seg-btn{padding:8px 10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--fg2);cursor:pointer;border:none;background:transparent;-webkit-user-select:none;transition:all .15s}
+    .seg-btn.active{background:var(--accent);color:#fff}
+    .section-hdr{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px}
+    .section-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg2)}
+    .section-count{background:var(--border);color:var(--fg2);font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:20px}
+    .pack-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;transition:all .15s;position:relative;overflow:hidden}
+    .pack-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:14px 0 0 14px}
+    .pack-card.bp::before{background:var(--bp-color)}.pack-card.rp::before{background:var(--rp-color)}
+    .pack-card.active-card{background:#1a1a2e}
+    .pack-card:active{transform:scale(.98);opacity:.85}
+    .type-badge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;padding:3px 7px;border-radius:6px;flex-shrink:0}
+    .bp .type-badge{background:rgba(79,143,255,.15);color:var(--bp-color)}.rp .type-badge{background:rgba(155,111,255,.15);color:var(--rp-color)}
+    .pack-info{flex:1;min-width:0}
+    .pack-name{font-size:14px;font-weight:500;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pack-meta{font-size:11px;color:var(--fg2);font-family:'JetBrains Mono',monospace;margin-top:2px}
+    .order-badge{width:26px;height:26px;background:rgba(79,143,255,.15);border:1px solid rgba(79,143,255,.3);border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .order-controls{display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+    .ord-btn{width:28px;height:24px;background:var(--surface);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--fg2);transition:all .1s}
+    .ord-btn:active{background:var(--border);transform:scale(.9)}
+    .action-btn{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .1s;flex-shrink:0}
+    .action-btn:active{transform:scale(.88)}
+    .btn-activate{background:rgba(61,220,132,.15);color:var(--ok)}.btn-deactivate{background:rgba(255,85,102,.15);color:var(--err)}
+    .empty-state{text-align:center;padding:40px 20px;color:var(--fg2)}
+    .empty-icon{font-size:40px;margin-bottom:12px}.empty-text{font-size:14px;line-height:1.5}
+    .apply-footer{background:var(--surface);border-top:1px solid var(--border);padding:12px 16px calc(var(--safe-bot) + 12px);display:flex;gap:10px;align-items:center;flex-shrink:0}
+    .apply-info{flex:1;font-size:12px;color:var(--fg2);font-family:'JetBrains Mono',monospace}
+    .apply-btn{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;border-radius:12px;padding:12px 22px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .15s}
+    .apply-btn:active{transform:scale(.96);opacity:.9}.apply-btn:disabled{opacity:.4;cursor:default}
+    #toast{position:fixed;bottom:calc(var(--safe-bot) + 90px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 20px;font-size:13px;color:var(--fg);opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;z-index:200;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none;align-items:flex-end;backdrop-filter:blur(4px)}
+    .modal-overlay.open{display:flex}
+    .modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;border-top:1px solid var(--border);width:100%;max-height:88dvh;display:flex;flex-direction:column;padding-bottom:calc(var(--safe-bot) + 16px);animation:slideUp .3s ease}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;flex-shrink:0}
+    .modal-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--fg);padding:12px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+    .modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+    .modal-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--fg);font-family:'Outfit',sans-serif;font-size:15px;outline:none;margin-bottom:12px;-webkit-appearance:none}
+    .modal-input:focus{border-color:var(--accent)}
+    .modal-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:8px}
+    .modal-btn.secondary{background:var(--card);color:var(--fg2);border:1px solid var(--border)}
+    /* Browser */
+    .browser-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+    .browser-path-wrap{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .browser-up-btn{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0}
+    .browser-up-btn:active{background:var(--border)}
+    .browser-list{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .browser-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+    .browser-item:last-child{border-bottom:none}
+    .browser-item:active{background:var(--border)}
+    .browser-item.selected{background:rgba(79,143,255,.12);border-left:3px solid var(--accent)}
+    .browser-item-icon{font-size:18px;flex-shrink:0}
+    .browser-item-name{flex:1;font-size:14px;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .browser-item-arrow{font-size:14px;color:var(--fg2);flex-shrink:0}
+    .browser-status{text-align:center;padding:28px;color:var(--fg2);font-size:13px;line-height:1.6}
+    .selected-path-bar{background:rgba(79,143,255,.1);border:1px solid rgba(79,143,255,.3);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);word-break:break-all;display:none}
+    .selected-path-bar.visible{display:block}
+    /* Conn dot */
+    .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--fg2);display:inline-block;margin-right:6px}
+    .conn-dot.ok{background:var(--ok)}.conn-dot.err{background:var(--err)}
+    /* Settings */
+    .settings-section{margin-bottom:20px}
+    .settings-label{font-size:11px;color:var(--fg2);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+    .settings-row{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .settings-item{display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);gap:12px;cursor:pointer}
+    .settings-item:last-child{border-bottom:none}.settings-item:active{background:var(--border)}
+    .settings-icon{font-size:20px;width:28px;text-align:center}
+    .settings-text{flex:1}.settings-title{font-size:15px;color:var(--fg)}.settings-desc{font-size:12px;color:var(--fg2);margin-top:1px;word-break:break-all}
+    .settings-arrow{color:var(--fg2)}
+    /* Dashboard */
+    .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .dash-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 14px;text-align:center}
+    .dash-num{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;line-height:1}
+    .dash-lbl{font-size:10px;color:var(--fg2);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.5px;margin-top:4px}
+    .confirm-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+    .confirm-row:last-child{border-bottom:none}
+    .confirm-idx{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;color:var(--accent);width:24px;text-align:center}
+    ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+  </style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div>
+      <div class="app-name">CARTERCRAFT</div>
+      <div class="app-sub">ADDON MANAGER v7.2</div>
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn" onclick="openAddPackModal()">+</div>
+      <div class="icon-btn" onclick="openBackupModal()">S</div>
+    </div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-pill"><div class="stat-num" id="stat-bp" style="color:var(--bp-color)">0</div><div class="stat-label">BP Active</div></div>
+    <div class="stat-pill"><div class="stat-num" id="stat-rp" style="color:var(--rp-color)">0</div><div class="stat-label">RP Active</div></div>
+    <div class="stat-pill"><div class="stat-num" id="stat-total" style="color:var(--fg2)">0</div><div class="stat-label">Total</div></div>
+    <div class="stat-pill"><div class="stat-num" id="stat-issues" style="color:var(--ok)">0</div><div class="stat-label">Issues</div></div>
+  </div>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('world')" id="tab-world"><span class="tab-icon">W</span>World</div>
+    <div class="tab" onclick="switchTab('packs')" id="tab-packs"><span class="tab-icon">P</span>Packs</div>
+    <div class="tab" onclick="switchTab('dash')" id="tab-dash"><span class="tab-icon">D</span>Dash</div>
+    <div class="tab" onclick="switchTab('settings')" id="tab-settings"><span class="tab-icon">S</span>Settings</div>
+  </div>
+
+  <!-- WORLD TAB -->
+  <div class="content" id="panel-world">
+    <div class="world-selector" onclick="openPathBrowser('world')">
+      <div class="world-icon">W</div>
+      <div class="world-info">
+        <div class="world-name" id="world-name-display">No world selected</div>
+        <div class="world-path" id="world-path-display">Tap to browse server</div>
+      </div>
+      <div class="chevron">&rsaquo;</div>
+    </div>
+
+    <div class="path-cards">
+      <div class="path-card" onclick="openPathBrowser('bp')">
+        <div class="path-card-label" style="color:var(--bp-color)">BP Behavior Packs</div>
+        <div class="path-card-val" id="bp-path-display">Not set</div>
+      </div>
+      <div class="path-card" onclick="openPathBrowser('rp')">
+        <div class="path-card-label" style="color:var(--rp-color)">RP Resource Packs</div>
+        <div class="path-card-val" id="rp-path-display">Not set</div>
+      </div>
+    </div>
+
+    <!-- SCAN BUTTON -->
+    <div class="scan-bar">
+      <button class="scan-btn" id="scan-btn" onclick="scanFolders()" disabled>
+        Scan Folders
+      </button>
+    </div>
+
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">*</span>
+        <input type="text" id="search-input" placeholder="Search packs..." oninput="applyFilter()" />
+      </div>
+      <div class="type-seg">
+        <button class="seg-btn active" onclick="setTypeFilter('all',this)">ALL</button>
+        <button class="seg-btn" onclick="setTypeFilter('bp',this)">BP</button>
+        <button class="seg-btn" onclick="setTypeFilter('rp',this)">RP</button>
+      </div>
+    </div>
+
+    <div class="section-hdr"><span class="section-title" style="color:var(--ok)">Active</span><span class="section-count" id="active-count">0</span></div>
+    <div id="active-list"><div class="empty-state"><div class="empty-icon">-</div><div class="empty-text">No active packs.<br>Activate from Available below.</div></div></div>
+
+    <div class="section-hdr"><span class="section-title">Available</span><span class="section-count" id="inactive-count">0</span></div>
+    <div id="inactive-list"><div class="empty-state"><div class="empty-icon">-</div><div class="empty-text">Tap Scan Folders to load packs from your server.</div></div></div>
+
+    <div style="height:80px"></div>
+  </div>
+
+  <!-- PACKS TAB -->
+  <div class="content" id="panel-packs" style="display:none">
+    <div class="section-hdr" style="margin-top:4px"><span class="section-title">All Packs</span></div>
+    <div id="all-packs-list"></div>
+  </div>
+
+  <!-- DASHBOARD TAB -->
+  <div class="content" id="panel-dash" style="display:none">
+    <div style="height:8px"></div>
+    <div class="dash-grid">
+      <div class="dash-card"><div class="dash-num" style="color:var(--bp-color)" id="d-bp">0</div><div class="dash-lbl">Behavior</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--rp-color)" id="d-rp">0</div><div class="dash-lbl">Resource</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--ok)" id="d-active">0</div><div class="dash-lbl">Active</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--err)" id="d-issues">0</div><div class="dash-lbl">Issues</div></div>
+    </div>
+    <div class="section-hdr"><span class="section-title">Load Order</span></div>
+    <div id="load-order-preview"></div>
+    <div class="section-hdr" style="margin-top:16px"><span class="section-title">Validation</span></div>
+    <div id="validation-list"><div class="empty-state"><div class="empty-icon">OK</div><div class="empty-text">No issues detected.</div></div></div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="content" id="panel-settings" style="display:none">
+    <div style="height:8px"></div>
+    <div class="settings-section">
+      <div class="settings-label">Server Connection</div>
+      <div class="settings-row">
+        <div class="settings-item" onclick="openServerModal()">
+          <span class="settings-icon">S</span>
+          <div class="settings-text">
+            <div class="settings-title">SFTP Credentials</div>
+            <div class="settings-desc"><span class="conn-dot" id="conn-dot"></span><span id="conn-label">Not configured</span></div>
+          </div>
+          <span class="settings-arrow">&rsaquo;</span>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Paths</div>
+      <div class="settings-row">
+        <div class="settings-item" onclick="openPathBrowser('world')">
+          <span class="settings-icon">W</span>
+          <div class="settings-text"><div class="settings-title">World Folder</div><div class="settings-desc" id="setting-world-path">Not set</div></div>
+          <span class="settings-arrow">&rsaquo;</span>
+        </div>
+        <div class="settings-item" onclick="openPathBrowser('bp')">
+          <span class="settings-icon">B</span>
+          <div class="settings-text"><div class="settings-title">Behavior Packs Folder</div><div class="settings-desc" id="setting-bp-path">Not set</div></div>
+          <span class="settings-arrow">&rsaquo;</span>
+        </div>
+        <div class="settings-item" onclick="openPathBrowser('rp')">
+          <span class="settings-icon">R</span>
+          <div class="settings-text"><div class="settings-title">Resource Packs Folder</div><div class="settings-desc" id="setting-rp-path">Not set</div></div>
+          <span class="settings-arrow">&rsaquo;</span>
+        </div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Profiles</div>
+      <div class="settings-row">
+        <div class="settings-item" onclick="openSaveProfileModal()"><span class="settings-icon">S</span><div class="settings-text"><div class="settings-title">Save Profile</div><div class="settings-desc">Save current config as a profile</div></div><span class="settings-arrow">&rsaquo;</span></div>
+        <div class="settings-item" onclick="openLoadProfileModal()"><span class="settings-icon">L</span><div class="settings-text"><div class="settings-title">Load Profile</div><div class="settings-desc" id="profile-count-label">No profiles saved</div></div><span class="settings-arrow">&rsaquo;</span></div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Data</div>
+      <div class="settings-row">
+        <div class="settings-item" onclick="openAddPackModal()"><span class="settings-icon">+</span><div class="settings-text"><div class="settings-title">Add Pack Manually</div><div class="settings-desc">Enter pack details by hand</div></div><span class="settings-arrow">&rsaquo;</span></div>
+        <div class="settings-item" onclick="clearAllData()"><span class="settings-icon">X</span><div class="settings-text"><div class="settings-title" style="color:var(--err)">Clear All Data</div><div class="settings-desc">Remove all packs and settings</div></div><span class="settings-arrow">&rsaquo;</span></div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">About</div>
+      <div class="settings-row"><div class="settings-item"><span class="settings-icon">C</span><div class="settings-text"><div class="settings-title">Cartercraft Addon Manager</div><div class="settings-desc">iOS PWA v7.2.0</div></div></div></div>
+    </div>
+  </div>
+
+  <div class="apply-footer" id="apply-footer">
+    <div class="apply-info" id="apply-info">Select packs to activate</div>
+    <button class="apply-btn" id="apply-btn" onclick="showConfirmModal()">Apply</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- SERVER SETTINGS MODAL -->
+<div class="modal-overlay" id="modal-server" onclick="closeModal('modal-server')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">SFTP Server Settings</div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--fg2);margin-bottom:14px;line-height:1.5">Enter your Shockbyte SFTP credentials. Saved on-device only.</p>
+      <input class="modal-input" type="url"      id="s-proxy" placeholder="Proxy URL (https://yourapp.onrender.com)" />
+      <input class="modal-input" type="text"     id="s-host"  placeholder="SFTP Host (e.g. s1.shockbyte.com)" />
+      <input class="modal-input" type="number"   id="s-port"  placeholder="Port" value="2222" />
+      <input class="modal-input" type="text"     id="s-user"  placeholder="Username" autocomplete="off" />
+      <input class="modal-input" type="password" id="s-pass"  placeholder="Password" autocomplete="off" />
+      <button class="modal-btn" id="test-btn" onclick="testConnection()" style="background:var(--ok);color:#000;font-weight:700">Test Connection</button>
+      <div id="test-result" style="font-size:13px;color:var(--fg2);margin-bottom:12px;font-family:'JetBrains Mono',monospace;min-height:18px"></div>
+      <button class="modal-btn" onclick="saveServerSettings()">Save Settings</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-server')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- PATH BROWSER MODAL -->
+<div class="modal-overlay" id="modal-browser" onclick="closeModal('modal-browser')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="browser-title">Browse Server</div>
+    <div class="modal-body">
+      <div class="browser-bar">
+        <div class="browser-path-wrap" id="browser-path-display">/</div>
+        <div class="browser-up-btn" onclick="browserGoUp()">Up</div>
+      </div>
+      <div class="selected-path-bar" id="selected-path-bar">Selected: <span id="selected-path-text"></span></div>
+      <div class="browser-list" id="browser-list"><div class="browser-status">Loading...</div></div>
+      <button class="modal-btn" id="use-path-btn" onclick="useSelectedPath()" disabled style="opacity:.4">Use This Folder</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-browser')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PACK MODAL -->
+<div class="modal-overlay" id="modal-add-pack" onclick="closeModal('modal-add-pack')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Pack</div>
+    <div class="modal-body">
+      <input class="modal-input" type="text" id="new-pack-name" placeholder="Pack name" />
+      <input class="modal-input" type="text" id="new-pack-version" placeholder="Version (e.g. 1.0.0)" />
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <button class="modal-btn" id="add-bp-btn" onclick="setNewPackType('bp')" style="background:rgba(79,143,255,.2);color:var(--bp-color);border:1px solid var(--bp-color)">Behavior Pack</button>
+        <button class="modal-btn" id="add-rp-btn" onclick="setNewPackType('rp')" style="background:rgba(155,111,255,.2);color:var(--rp-color);border:1px solid var(--rp-color)">Resource Pack</button>
+      </div>
+      <button class="modal-btn" onclick="addNewPack()">Add Pack</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-add-pack')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="modal-confirm" onclick="closeModal('modal-confirm')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Confirm Load Order</div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--fg2);margin-bottom:14px">These packs will be applied to your world in this order:</p>
+      <div id="confirm-list"></div>
+      <div style="height:16px"></div>
+      <button class="modal-btn" onclick="applyToWorld()" style="background:linear-gradient(135deg,var(--accent),var(--accent2))">Apply to World</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-confirm')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- BACKUP MODAL -->
+<div class="modal-overlay" id="modal-backup" onclick="closeModal('modal-backup')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Snapshots</div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--fg2);margin-bottom:14px;line-height:1.5">Snapshot your current active pack configuration.</p>
+      <div id="backup-list" style="margin-bottom:14px"></div>
+      <button class="modal-btn" onclick="createBackup()" style="background:var(--ok);color:#000;font-weight:700">Create Snapshot</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-backup')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- SAVE PROFILE MODAL -->
+<div class="modal-overlay" id="modal-save-profile" onclick="closeModal('modal-save-profile')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Save Profile</div>
+    <div class="modal-body">
+      <input class="modal-input" type="text" id="profile-name-input" placeholder="Profile name" />
+      <button class="modal-btn" onclick="saveProfile()">Save</button>
+      <button class="modal-btn secondary" onclick="closeModal('modal-save-profile')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOAD PROFILE MODAL -->
+<div class="modal-overlay" id="modal-load-profile" onclick="closeModal('modal-load-profile')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Load Profile</div>
+    <div class="modal-body" id="profile-list-body">
+      <div class="empty-state"><div class="empty-icon">-</div><div class="empty-text">No profiles saved yet.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════ State ════
+let state = {
+  proxyUrl:'', sftpHost:'', sftpPort:2222, sftpUser:'', sftpPass:'',
+  worldName:'', worldPath:'', bpPath:'', rpPath:'',
+  packs:[], activeBP:[], activeRP:[],
+  profiles:[], backups:[],
+};
+let typeFilter='all', searchQuery='', newPackType='bp', currentTab='world';
+let browserMode='world', browserCurrentPath='', browserSelectedPath='', browserEntries=[];
+
+function saveState(){try{localStorage.setItem('cc_v5',JSON.stringify(state))}catch(e){}}
+function loadState(){try{const r=localStorage.getItem('cc_v5');if(r)Object.assign(state,JSON.parse(r))}catch(e){}}
+
+// ════ Proxy ════
+async function proxyPost(endpoint, extra){
+  if(!state.proxyUrl) throw new Error('Proxy URL not set. Go to Settings > SFTP Credentials.');
+  const res = await fetch(state.proxyUrl.replace(/\/$/,'')+endpoint, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      host:state.sftpHost, port:state.sftpPort,
+      username:state.sftpUser, password:state.sftpPass,
+      ...extra
+    })
+  });
+  const d = await res.json();
+  if(!d.ok) throw new Error(d.error || 'Proxy error');
+  return d;
+}
+
+// ════ Scan Folders ════
+async function scanFolders(){
+  if(!state.bpPath && !state.rpPath){ showToast('Set BP/RP paths first'); return; }
+  const btn = document.getElementById('scan-btn');
+  btn.textContent = 'Scanning...';
+  btn.disabled = true;
+
+  try {
+    // ── 1. Read manifest.json from each pack folder to get real UUID + name ──
+    async function readPackManifest(folderPath){
+      try {
+        const d = await proxyPost('/read-file', {path: folderPath + '/manifest.json'});
+        const m = JSON.parse(d.content);
+        const header = m.header || m.modules?.[0] || {};
+        return {
+          uuid: header.uuid || null,
+          name: header.name || null,
+          version: Array.isArray(header.version) ? header.version.join('.') : (header.version || '1.0.0'),
+        };
+      } catch(e){ return null; }
+    }
+
+    // ── 2. Scan BP and RP folders ──
+    let found = [];
+
+    if(state.bpPath){
+      try {
+        const d = await proxyPost('/list', {path: state.bpPath});
+        for(const f of d.items.filter(i => i.isDir)){
+          const manifest = await readPackManifest(f.path);
+          found.push({
+            id: 'bp_' + f.name,
+            name: manifest?.name || f.name,
+            type: 'bp',
+            version: manifest?.version || '1.0.0',
+            uuid: manifest?.uuid || ('bp-' + f.name),
+            folderName: f.name,
+            path: f.path,
+          });
+        }
+      } catch(e){ showToast('BP scan error: ' + e.message); }
+    }
+
+    if(state.rpPath){
+      try {
+        const d = await proxyPost('/list', {path: state.rpPath});
+        for(const f of d.items.filter(i => i.isDir)){
+          const manifest = await readPackManifest(f.path);
+          found.push({
+            id: 'rp_' + f.name,
+            name: manifest?.name || f.name,
+            type: 'rp',
+            version: manifest?.version || '1.0.0',
+            uuid: manifest?.uuid || ('rp-' + f.name),
+            folderName: f.name,
+            path: f.path,
+          });
+        }
+      } catch(e){ showToast('RP scan error: ' + e.message); }
+    }
+
+    if(!found.length){ showToast('No pack folders found'); return; }
+
+    // ── 3. Read world_behavior_packs.json + world_resource_packs.json ──
+    let activeBPUuids = new Set(), activeRPUuids = new Set();
+    if(state.worldPath){
+      try {
+        const d = await proxyPost('/read-file', {path: state.worldPath + '/world_behavior_packs.json'});
+        const arr = JSON.parse(d.content);
+        arr.forEach(e => { if(e.pack_id) activeBPUuids.add(e.pack_id); });
+      } catch(e){}
+      try {
+        const d = await proxyPost('/read-file', {path: state.worldPath + '/world_resource_packs.json'});
+        const arr = JSON.parse(d.content);
+        arr.forEach(e => { if(e.pack_id) activeRPUuids.add(e.pack_id); });
+      } catch(e){}
+    }
+
+    // ── 4. Replace packs list entirely, set active lists from world JSON ──
+    state.packs = found;
+    state.activeBP = found
+      .filter(p => p.type === 'bp' && activeBPUuids.has(p.uuid))
+      .map(p => p.id);
+    state.activeRP = found
+      .filter(p => p.type === 'rp' && activeRPUuids.has(p.uuid))
+      .map(p => p.id);
+
+    saveState();
+    renderWorldManager();
+    if(currentTab === 'packs') refreshAllPacks();
+
+    const activeCount = state.activeBP.length + state.activeRP.length;
+    showToast(found.length + ' packs loaded, ' + activeCount + ' active');
+
+  } finally {
+    btn.textContent = 'Scan Folders';
+    btn.disabled = !(state.bpPath || state.rpPath);
+  }
+}
+
+function updateScanBtn(){
+  const btn = document.getElementById('scan-btn');
+  if(btn) btn.disabled = !(state.bpPath || state.rpPath);
+}
+
+// ════ Tabs ════
+function switchTab(tab){
+  ['world','packs','dash','settings'].forEach(t=>{
+    document.getElementById('panel-'+t).style.display = t===tab?'block':'none';
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+  });
+  document.getElementById('apply-footer').style.display = tab==='world'?'flex':'none';
+  currentTab = tab;
+  if(tab==='dash') refreshDashboard();
+  if(tab==='packs') refreshAllPacks();
+}
+
+// ════ SFTP Browser ════
+function openPathBrowser(mode){
+  browserMode = mode;
+  const titles = {world:'Select World Folder', bp:'Select Behavior Packs Folder', rp:'Select Resource Packs Folder'};
+  document.getElementById('browser-title').textContent = titles[mode] || 'Browse Server';
+  browserSelectedPath = '';
+  document.getElementById('selected-path-bar').classList.remove('visible');
+  document.getElementById('use-path-btn').disabled = true;
+  document.getElementById('use-path-btn').style.opacity = '0.4';
+  openModal('modal-browser');
+  let start = '.';
+  if(mode==='world' && state.worldPath) start = state.worldPath;
+  else if(mode==='bp' && state.bpPath) start = state.bpPath;
+  else if(mode==='rp' && state.rpPath) start = state.rpPath;
+  else if(state.worldPath) start = state.worldPath;
+  browserNav(start);
+}
+
+async function browserNav(path){
+  if(!state.sftpHost || !state.sftpUser){
+    document.getElementById('browser-list').innerHTML =
+      '<div class="browser-status" style="color:var(--warn)">Configure SFTP credentials first in Settings.</div>';
+    return;
+  }
+  document.getElementById('browser-list').innerHTML = '<div class="browser-status">Loading...</div>';
+  try {
+    const d = await proxyPost('/list', {path});
+    browserCurrentPath = d.path;
+    browserEntries = d.items;
+    document.getElementById('browser-path-display').textContent = d.path;
+    renderBrowserList();
+  } catch(err){
+    document.getElementById('browser-list').innerHTML =
+      '<div class="browser-status" style="color:var(--err)">Error: ' + err.message + '</div>';
+  }
+}
+
+function renderBrowserList(){
+  const el = document.getElementById('browser-list');
+  if(!browserEntries.length){
+    el.innerHTML = '<div class="browser-status">(empty folder)</div>';
+    return;
+  }
+  const dirs = browserEntries.filter(e=>e.isDir);
+  const files = browserEntries.filter(e=>!e.isDir);
+  el.innerHTML = [...dirs,...files].map(item => {
+    const i = browserEntries.indexOf(item);
+    const sel = item.path===browserSelectedPath ? ' selected' : '';
+    const icon = item.isDir ? 'folder' : 'file';
+    const arrow = item.isDir ? '<span class="browser-item-arrow">&rsaquo;</span>' : '';
+    return '<div class="browser-item' + sel + '" onclick="browserClick(' + i + ')" ondblclick="browserDbl(' + i + ')">'
+      + '<span class="browser-item-icon">' + (item.isDir ? '[D]' : '[F]') + '</span>'
+      + '<span class="browser-item-name">' + item.name + '</span>'
+      + arrow
+      + '</div>';
+  }).join('');
+}
+
+function browserClick(i){
+  const item = browserEntries[i];
+  if(!item || !item.isDir) return;
+  browserSelectedPath = item.path;
+  document.getElementById('selected-path-text').textContent = item.path;
+  document.getElementById('selected-path-bar').classList.add('visible');
+  document.getElementById('use-path-btn').disabled = false;
+  document.getElementById('use-path-btn').style.opacity = '1';
+  renderBrowserList();
+}
+
+function browserDbl(i){
+  const item = browserEntries[i];
+  if(item && item.isDir) browserNav(item.path);
+}
+
+function browserGoUp(){
+  const parts = browserCurrentPath.replace(/\/$/,'').split('/');
+  if(parts.length <= 1) return;
+  parts.pop();
+  browserNav(parts.join('/') || '/');
+}
+
+function useSelectedPath(){
+  if(!browserSelectedPath) return;
+  const shortName = browserSelectedPath.split('/').pop() || browserSelectedPath;
+  if(browserMode==='world'){
+    state.worldPath = browserSelectedPath;
+    state.worldName = shortName;
+    // Auto-set BP/RP inside the world folder
+    state.bpPath = browserSelectedPath + '/behavior_packs';
+    state.rpPath = browserSelectedPath + '/resource_packs';
+    updatePathDisplays();
+    updateScanBtn();
+    saveState();
+    closeModal('modal-browser');
+    showToast('World set - tap Scan Folders to load packs');
+    return;
+  }
+  if(browserMode==='bp') state.bpPath = browserSelectedPath;
+  if(browserMode==='rp') state.rpPath = browserSelectedPath;
+  updatePathDisplays();
+  updateScanBtn();
+  saveState();
+  closeModal('modal-browser');
+  showToast('Path set: ' + shortName);
+}
+
+function updatePathDisplays(){
+  document.getElementById('world-name-display').textContent = state.worldName || 'No world selected';
+  document.getElementById('world-path-display').textContent = state.worldPath || 'Tap to browse server';
+  const bpEl = document.getElementById('bp-path-display');
+  bpEl.textContent = state.bpPath ? (state.bpPath.split('/').pop() || state.bpPath) : 'Not set';
+  bpEl.className = 'path-card-val' + (state.bpPath ? ' set' : '');
+  const rpEl = document.getElementById('rp-path-display');
+  rpEl.textContent = state.rpPath ? (state.rpPath.split('/').pop() || state.rpPath) : 'Not set';
+  rpEl.className = 'path-card-val' + (state.rpPath ? ' set' : '');
+  document.getElementById('setting-world-path').textContent = state.worldPath || 'Not set';
+  document.getElementById('setting-bp-path').textContent = state.bpPath || 'Not set';
+  document.getElementById('setting-rp-path').textContent = state.rpPath || 'Not set';
+}
+
+// ════ Server settings ════
+function openServerModal(){
+  document.getElementById('s-proxy').value = state.proxyUrl;
+  document.getElementById('s-host').value  = state.sftpHost;
+  document.getElementById('s-port').value  = state.sftpPort || 2222;
+  document.getElementById('s-user').value  = state.sftpUser;
+  document.getElementById('s-pass').value  = state.sftpPass;
+  document.getElementById('test-result').textContent = '';
+  openModal('modal-server');
+}
+
+function saveServerSettings(){
+  state.proxyUrl = document.getElementById('s-proxy').value.trim();
+  state.sftpHost = document.getElementById('s-host').value.trim();
+  state.sftpPort = parseInt(document.getElementById('s-port').value) || 2222;
+  state.sftpUser = document.getElementById('s-user').value.trim();
+  state.sftpPass = document.getElementById('s-pass').value;
+  saveState();
+  setConnLabel(state.sftpHost ? 'configured' : 'none');
+  closeModal('modal-server');
+  showToast('Server settings saved');
+}
+
+async function testConnection(){
+  const btn=document.getElementById('test-btn'), res=document.getElementById('test-result');
+  const proxy=document.getElementById('s-proxy').value.trim();
+  const host=document.getElementById('s-host').value.trim();
+  const user=document.getElementById('s-user').value.trim();
+  if(!proxy){res.style.color='var(--warn)';res.textContent='Enter proxy URL';return;}
+  if(!host){res.style.color='var(--warn)';res.textContent='Enter SFTP host';return;}
+  if(!user){res.style.color='var(--warn)';res.textContent='Enter username';return;}
+  btn.textContent='Connecting...'; btn.disabled=true; res.textContent='';
+  try{
+    const r = await fetch(proxy.replace(/\/$/,'')+'/connect',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({host, port:parseInt(document.getElementById('s-port').value)||2222, username:user, password:document.getElementById('s-pass').value})
+    });
+    const d = await r.json();
+    if(d.ok){res.style.color='var(--ok)';res.textContent='Connected! Home: '+d.home;setConnLabel('ok');}
+    else{res.style.color='var(--err)';res.textContent='Failed: '+(d.error||'unknown');setConnLabel('err');}
+  }catch(e){res.style.color='var(--err)';res.textContent='Error: '+e.message;setConnLabel('err');}
+  finally{btn.textContent='Test Connection';btn.disabled=false;}
+}
+
+function setConnLabel(status){
+  const dot=document.getElementById('conn-dot'), lbl=document.getElementById('conn-label');
+  dot.className = 'conn-dot' + (status==='ok'?' ok':status==='err'?' err':'');
+  lbl.textContent = status==='ok' ? 'Connected - '+state.sftpHost : status==='err' ? 'Connection error' : state.sftpHost ? 'Configured - '+state.sftpHost : 'Not configured';
+}
+
+// ════ Pack rendering ════
+function renderWorldManager(){
+  const ap=getActivePacks(), ip=getInactivePacks(), q=searchQuery.toLowerCase();
+  const fp = p => {
+    if(q && !p.name.toLowerCase().includes(q)) return false;
+    if(typeFilter==='bp' && p.type!=='bp') return false;
+    if(typeFilter==='rp' && p.type!=='rp') return false;
+    return true;
+  };
+  const fa=ap.filter(fp), fi=ip.filter(fp);
+  document.getElementById('active-count').textContent = fa.length;
+  document.getElementById('active-list').innerHTML = fa.length===0
+    ? '<div class="empty-state"><div class="empty-text">No active packs.</div></div>'
+    : fa.map(p => {
+        const ol = p.type==='bp' ? state.activeBP : state.activeRP;
+        const idx = ol.indexOf(p.id);
+        return '<div class="pack-card active-card ' + p.type + '">'
+          + '<div class="order-badge">' + (idx+1) + '</div>'
+          + '<div class="type-badge">' + p.type.toUpperCase() + '</div>'
+          + '<div class="pack-info"><div class="pack-name">' + p.name + '</div><div class="pack-meta">v' + p.version + '</div></div>'
+          + '<div class="order-controls">'
+          + '<div class="ord-btn" onclick="moveUp(\'' + p.id + '\',\'' + p.type + '\')">^</div>'
+          + '<div class="ord-btn" onclick="moveDown(\'' + p.id + '\',\'' + p.type + '\')">v</div>'
+          + '</div>'
+          + '<div class="action-btn btn-deactivate" onclick="deactivate(\'' + p.id + '\')">X</div>'
+          + '</div>';
+      }).join('');
+  document.getElementById('inactive-count').textContent = fi.length;
+  document.getElementById('inactive-list').innerHTML = fi.length===0
+    ? '<div class="empty-state"><div class="empty-text">All packs active!</div></div>'
+    : fi.map(p => '<div class="pack-card ' + p.type + '">'
+        + '<div class="type-badge">' + p.type.toUpperCase() + '</div>'
+        + '<div class="pack-info"><div class="pack-name">' + p.name + '</div><div class="pack-meta">v' + p.version + '</div></div>'
+        + '<div class="action-btn btn-activate" onclick="activate(\'' + p.id + '\')">+</div>'
+        + '</div>').join('');
+  updateStats();
+  const tot = state.activeBP.length + state.activeRP.length;
+  document.getElementById('apply-info').textContent = tot>0 ? state.activeBP.length+' BP / '+state.activeRP.length+' RP active' : 'No packs active';
+  document.getElementById('apply-btn').disabled = tot===0;
+}
+
+function getActivePacks(){return [...state.activeBP,...state.activeRP].map(id=>state.packs.find(p=>p.id===id)).filter(Boolean);}
+function getInactivePacks(){const s=new Set([...state.activeBP,...state.activeRP]);return state.packs.filter(p=>!s.has(p.id));}
+
+function updateStats(){
+  document.getElementById('stat-bp').textContent = state.activeBP.length;
+  document.getElementById('stat-rp').textContent = state.activeRP.length;
+  document.getElementById('stat-total').textContent = state.packs.length;
+  const iss = Math.abs(state.packs.filter(p=>p.type==='bp').length - state.packs.filter(p=>p.type==='rp').length);
+  document.getElementById('stat-issues').textContent = iss;
+  document.getElementById('stat-issues').style.color = iss>0 ? 'var(--warn)' : 'var(--ok)';
+}
+
+function refreshAllPacks(){
+  const el = document.getElementById('all-packs-list');
+  if(!state.packs.length){el.innerHTML='<div class="empty-state"><div class="empty-text">No packs yet. Tap Scan Folders on the World tab.</div></div>';return;}
+  const s = new Set([...state.activeBP,...state.activeRP]);
+  el.innerHTML = state.packs.map(p =>
+    '<div class="pack-card ' + p.type + '" style="' + (s.has(p.id)?'border-color:rgba(61,220,132,.3)':'') + '">'
+    + '<div class="type-badge">' + p.type.toUpperCase() + '</div>'
+    + '<div class="pack-info"><div class="pack-name">' + p.name + '</div><div class="pack-meta">v' + p.version + ' - ' + (s.has(p.id)?'active':'inactive') + '</div></div>'
+    + '<div class="action-btn" onclick="deletePack(\'' + p.id + '\')" style="background:rgba(255,85,102,.1);color:var(--err)">X</div>'
+    + '</div>'
+  ).join('');
+}
+
+function refreshDashboard(){
+  document.getElementById('d-bp').textContent = state.packs.filter(p=>p.type==='bp').length;
+  document.getElementById('d-rp').textContent = state.packs.filter(p=>p.type==='rp').length;
+  document.getElementById('d-active').textContent = state.activeBP.length + state.activeRP.length;
+  const iss = Math.abs(state.packs.filter(p=>p.type==='bp').length - state.packs.filter(p=>p.type==='rp').length);
+  document.getElementById('d-issues').textContent = iss;
+  const ap = getActivePacks();
+  document.getElementById('load-order-preview').innerHTML = ap.length===0
+    ? '<div class="empty-state" style="padding:20px"><div class="empty-text">No active packs.</div></div>'
+    : ap.map((p,i) =>
+        '<div class="confirm-row">'
+        + '<div class="confirm-idx">' + (i+1) + '</div>'
+        + '<span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;padding:3px 7px;border-radius:6px;background:' + (p.type==='bp'?'rgba(79,143,255,.15)':'rgba(155,111,255,.15)') + ';color:' + (p.type==='bp'?'var(--bp-color)':'var(--rp-color)') + '">' + p.type.toUpperCase() + '</span>'
+        + '<div style="flex:1;font-size:14px;color:var(--fg)">' + p.name + '</div>'
+        + '<div style="font-size:11px;color:var(--fg2);font-family:\'JetBrains Mono\',monospace">v' + p.version + '</div>'
+        + '</div>'
+      ).join('');
+  document.getElementById('validation-list').innerHTML = iss===0
+    ? '<div class="empty-state"><div class="empty-text">No issues detected.</div></div>'
+    : '<div class="pack-card" style="border-color:var(--warn)"><div class="pack-info"><div class="pack-name" style="color:var(--warn)">Unmatched packs</div><div class="pack-meta">BP count does not match RP count</div></div></div>';
+}
+
+// ════ Pack actions ════
+function activate(id){const p=state.packs.find(x=>x.id===id);if(!p)return;if(p.type==='bp'&&!state.activeBP.includes(id))state.activeBP.push(id);if(p.type==='rp'&&!state.activeRP.includes(id))state.activeRP.push(id);saveState();renderWorldManager();showToast('Activated: '+p.name);}
+function deactivate(id){state.activeBP=state.activeBP.filter(i=>i!==id);state.activeRP=state.activeRP.filter(i=>i!==id);saveState();renderWorldManager();showToast('Deactivated');}
+function moveUp(id,type){const l=type==='bp'?state.activeBP:state.activeRP,i=l.indexOf(id);if(i>0){[l[i-1],l[i]]=[l[i],l[i-1]];}saveState();renderWorldManager();}
+function moveDown(id,type){const l=type==='bp'?state.activeBP:state.activeRP,i=l.indexOf(id);if(i<l.length-1){[l[i+1],l[i]]=[l[i],l[i+1]];}saveState();renderWorldManager();}
+function deletePack(id){state.packs=state.packs.filter(p=>p.id!==id);state.activeBP=state.activeBP.filter(i=>i!==id);state.activeRP=state.activeRP.filter(i=>i!==id);saveState();renderWorldManager();refreshAllPacks();}
+function applyFilter(){searchQuery=document.getElementById('search-input').value;renderWorldManager();}
+function setTypeFilter(t,btn){typeFilter=t;document.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderWorldManager();}
+
+// ════ Modals ════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openAddPackModal(){document.getElementById('new-pack-name').value='';document.getElementById('new-pack-version').value='1.0.0';setNewPackType('bp');openModal('modal-add-pack');}
+function setNewPackType(t){newPackType=t;document.getElementById('add-bp-btn').style.opacity=t==='bp'?'1':'0.4';document.getElementById('add-rp-btn').style.opacity=t==='rp'?'1':'0.4';}
+function addNewPack(){const name=document.getElementById('new-pack-name').value.trim(),version=document.getElementById('new-pack-version').value.trim()||'1.0.0';if(!name){showToast('Enter a pack name');return;}state.packs.push({id:Date.now().toString(),name,type:newPackType,version,uuid:crypto.randomUUID()});saveState();closeModal('modal-add-pack');renderWorldManager();if(currentTab==='packs')refreshAllPacks();showToast('Added: '+name);}
+function showConfirmModal(){const ap=getActivePacks();document.getElementById('confirm-list').innerHTML=ap.length===0?'<div class="empty-state"><div class="empty-text">No active packs.</div></div>':ap.map((p,i)=>'<div class="confirm-row"><div class="confirm-idx">'+(i+1)+'</div><span style="font-family:\'JetBrains Mono\',monospace;font-size:10px;padding:3px 7px;border-radius:6px;background:'+(p.type==='bp'?'rgba(79,143,255,.15)':'rgba(155,111,255,.15)')+';color:'+(p.type==='bp'?'var(--bp-color)':'var(--rp-color)')+'">'+p.type.toUpperCase()+'</span><div style="flex:1;font-size:14px;color:var(--fg)">'+p.name+'</div><div style="font-size:11px;color:var(--fg2);font-family:\'JetBrains Mono\',monospace">v'+p.version+'</div></div>').join('');openModal('modal-confirm');}
+function applyToWorld(){if(!state.worldPath){showToast('Set a world path first');closeModal('modal-confirm');openPathBrowser('world');return;}showToast('Applied at '+new Date().toLocaleTimeString());closeModal('modal-confirm');}
+function openBackupModal(){const el=document.getElementById('backup-list');el.innerHTML=state.backups.length===0?'<div class="empty-state"><div class="empty-text">No snapshots yet.</div></div>':state.backups.slice().reverse().map(b=>'<div class="pack-card" style="margin-bottom:8px"><div class="pack-info"><div class="pack-name">'+b.name+'</div><div class="pack-meta">'+b.date+' - '+b.bpCount+' BP / '+b.rpCount+' RP</div></div><div class="action-btn" onclick="restoreBackup(\''+b.id+'\')" style="background:rgba(79,143,255,.15);color:var(--accent)">R</div></div>').join('');openModal('modal-backup');}
+function createBackup(){state.backups.push({id:Date.now().toString(),name:state.worldName||'Backup',date:new Date().toLocaleString(),activeBP:[...state.activeBP],activeRP:[...state.activeRP],bpCount:state.activeBP.length,rpCount:state.activeRP.length});saveState();closeModal('modal-backup');showToast('Snapshot created');}
+function restoreBackup(id){const b=state.backups.find(x=>x.id===id);if(!b)return;state.activeBP=[...b.activeBP];state.activeRP=[...b.activeRP];saveState();renderWorldManager();closeModal('modal-backup');showToast('Snapshot restored');}
+function openSaveProfileModal(){document.getElementById('profile-name-input').value='';openModal('modal-save-profile');}
+function saveProfile(){const name=document.getElementById('profile-name-input').value.trim();if(!name){showToast('Enter a name');return;}state.profiles.push({id:Date.now().toString(),name,worldName:state.worldName,worldPath:state.worldPath,bpPath:state.bpPath,rpPath:state.rpPath,packs:JSON.parse(JSON.stringify(state.packs)),activeBP:[...state.activeBP],activeRP:[...state.activeRP]});saveState();updateProfileCount();closeModal('modal-save-profile');showToast('Profile saved: '+name);}
+function openLoadProfileModal(){const el=document.getElementById('profile-list-body');el.innerHTML=state.profiles.length===0?'<div class="empty-state"><div class="empty-text">No profiles saved yet.</div></div>':state.profiles.map(p=>'<div class="pack-card" style="margin-bottom:8px;cursor:pointer" onclick="loadProfile(\''+p.id+'\')"><div class="pack-info"><div class="pack-name">'+p.name+'</div><div class="pack-meta">'+(p.worldPath||'No path')+' - '+p.packs.length+' packs</div></div><div class="action-btn" onclick="event.stopPropagation();deleteProfile(\''+p.id+'\')" style="background:rgba(255,85,102,.1);color:var(--err)">X</div></div>').join('');openModal('modal-load-profile');}
+function loadProfile(id){const p=state.profiles.find(x=>x.id===id);if(!p)return;Object.assign(state,{worldName:p.worldName,worldPath:p.worldPath,bpPath:p.bpPath||'',rpPath:p.rpPath||'',packs:JSON.parse(JSON.stringify(p.packs)),activeBP:[...p.activeBP],activeRP:[...p.activeRP]});saveState();applyStateToUI();closeModal('modal-load-profile');showToast('Profile loaded: '+p.name);}
+function deleteProfile(id){state.profiles=state.profiles.filter(p=>p.id!==id);saveState();openLoadProfileModal();updateProfileCount();}
+function updateProfileCount(){const n=state.profiles.length;document.getElementById('profile-count-label').textContent=n===0?'No profiles saved':n+' profile'+(n>1?'s':'')+' saved';}
+function clearAllData(){if(!confirm('Clear all data?'))return;state={proxyUrl:'',sftpHost:'',sftpPort:2222,sftpUser:'',sftpPass:'',worldName:'',worldPath:'',bpPath:'',rpPath:'',packs:[],activeBP:[],activeRP:[],profiles:[],backups:[]};saveState();applyStateToUI();showToast('Cleared');}
+
+function applyStateToUI(){
+  updatePathDisplays();
+  updateProfileCount();
+  updateScanBtn();
+  setConnLabel(state.sftpHost ? 'configured' : 'none');
+  renderWorldManager();
+}
+
+// ════ Toast ════
+let toastTimer;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ════ Init ════
+loadState();
+applyStateToUI();
+</script>
+</body>
+</html>
